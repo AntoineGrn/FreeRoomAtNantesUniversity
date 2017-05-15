@@ -1,4 +1,4 @@
-package freeclassroomuniversity;
+package modele;
 
 public class Creneau {
 	public String startHour;

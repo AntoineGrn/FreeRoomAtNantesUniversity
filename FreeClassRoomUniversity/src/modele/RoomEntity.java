@@ -1,4 +1,4 @@
-package freeclassroomuniversity;
+package modele;
 
 public class RoomEntity {
 	long id;
