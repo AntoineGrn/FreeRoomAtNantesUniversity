@@ -62,11 +62,11 @@ public class FreeClassRoomUniversityServlet extends HttpServlet {
 							if (start != null && end != null) {
 								if (start.after(today)) {
 									Entity creneau = new Entity("Creneau");
-									creneau.setProperty("start", start);
-									creneau.setProperty("end", end);
+									creneau.setProperty("start", start.getTime());
+									creneau.setProperty("end", end.getTime());
 									creneau.setProperty("salle", room.replace(".html", ""));
 						    		datastore.put(creneau);
-									System.out.println("Salle : " + room + " Heure de début : "+ start + " Heure de fin" + end);
+									System.out.println("Salle : " + room + " Heure de début : "+ start.getTime() + " Heure de fin" + end.getTime());
 									start = null;
 									end = null;
 								}
