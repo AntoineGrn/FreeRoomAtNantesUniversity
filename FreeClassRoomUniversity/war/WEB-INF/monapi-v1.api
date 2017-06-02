@@ -81,13 +81,13 @@
           "appId" : {
             "type" : "string"
           },
-          "namespace" : {
-            "type" : "string"
-          },
           "propertiesFrom" : {
             "$ref" : "Entity"
           },
           "kind" : {
+            "type" : "string"
+          },
+          "namespace" : {
             "type" : "string"
           },
           "properties" : {
