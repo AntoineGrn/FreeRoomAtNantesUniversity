@@ -78,17 +78,17 @@
           "parent" : {
             "$ref" : "Key"
           },
+          "namespace" : {
+            "type" : "string"
+          },
+          "kind" : {
+            "type" : "string"
+          },
           "appId" : {
             "type" : "string"
           },
           "propertiesFrom" : {
             "$ref" : "Entity"
-          },
-          "kind" : {
-            "type" : "string"
-          },
-          "namespace" : {
-            "type" : "string"
           },
           "properties" : {
             "$ref" : "JsonMap"
