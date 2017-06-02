@@ -1,8 +1,13 @@
 package service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
@@ -10,10 +15,10 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.repackaged.com.google.datastore.v1.CompositeFilter;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
-@Api(name = "roomapi")
+@Api(name = "monapi", version="v1")
 public class RoomEndPoint {
 	public DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	
@@ -27,15 +32,27 @@ public class RoomEndPoint {
 		
 		return rooms;
 	}
-	
-	public List<Entity> getCreneauxLibres (Date start, Date end) {
-		Filter StartDateTimeFilter = new Query.FilterPredicate("start", FilterOperator.GREATER_THAN_OR_EQUAL, start);
-	    Filter EndDateTimeFilter = new Query.FilterPredicate("end", FilterOperator.LESS_THAN_OR_EQUAL, end);
+	@ApiMethod(
+	        path = "creneaux/get/{start}/{end}",
+	        httpMethod = HttpMethod.GET
+	    )
+	public List<Entity> getCreneauxLibres (@Named("start") String start, @Named("end") String end) throws ParseException {
+		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+		final Date startDate = sdf.parse(start);
+		final Date endDate = sdf.parse(end);
+		long startDateTime = startDate.getTime();
+		long endDateTime = endDate.getTime();
+		/*Filter StartDateTimeFilter = new Query.FilterPredicate("start", FilterOperator.GREATER_THAN_OR_EQUAL, startDateTime);
+	    Filter EndDateTimeFilter = new Query.FilterPredicate("end", FilterOperator.LESS_THAN_OR_EQUAL, endDateTime);
 
     	// Use CompositeFilter to combine multiple filters
     	Query.CompositeFilter DateRangeFilter = Query.CompositeFilterOperator.and(StartDateTimeFilter, EndDateTimeFilter);
 		
 		Query q = new Query("Creneau").setFilter(DateRangeFilter);
+		PreparedQuery pq = datastore.prepare(q);*/
+		Filter propertyFilter = new FilterPredicate("start", FilterOperator.GREATER_THAN_OR_EQUAL, startDateTime);
+		Filter propertyFilterEnd = new FilterPredicate("end", FilterOperator.LESS_THAN_OR_EQUAL, endDateTime);
+		Query q = new Query("Creneau").setFilter(propertyFilter).setFilter(propertyFilterEnd);
 		PreparedQuery pq = datastore.prepare(q);
 		List<Entity> creneaux = pq.asList(FetchOptions.Builder.withDefaults());
 		
