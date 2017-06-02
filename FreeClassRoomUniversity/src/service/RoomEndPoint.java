@@ -42,17 +42,14 @@ public class RoomEndPoint {
 		final Date endDate = sdf.parse(end);
 		long startDateTime = startDate.getTime();
 		long endDateTime = endDate.getTime();
-		/*Filter StartDateTimeFilter = new Query.FilterPredicate("start", FilterOperator.GREATER_THAN_OR_EQUAL, startDateTime);
-	    Filter EndDateTimeFilter = new Query.FilterPredicate("end", FilterOperator.LESS_THAN_OR_EQUAL, endDateTime);
+		Filter StartDateTimeFilter = new Query.FilterPredicate("start", FilterOperator.GREATER_THAN_OR_EQUAL, startDateTime);
+	    Filter EndDateTimeFilter = new Query.FilterPredicate("start", FilterOperator.LESS_THAN_OR_EQUAL, endDateTime);
 
     	// Use CompositeFilter to combine multiple filters
     	Query.CompositeFilter DateRangeFilter = Query.CompositeFilterOperator.and(StartDateTimeFilter, EndDateTimeFilter);
 		
 		Query q = new Query("Creneau").setFilter(DateRangeFilter);
-		PreparedQuery pq = datastore.prepare(q);*/
-		Filter propertyFilter = new FilterPredicate("start", FilterOperator.GREATER_THAN_OR_EQUAL, startDateTime);
-		Filter propertyFilterEnd = new FilterPredicate("end", FilterOperator.LESS_THAN_OR_EQUAL, endDateTime);
-		Query q = new Query("Creneau").setFilter(propertyFilter).setFilter(propertyFilterEnd);
+		System.out.println(q);
 		PreparedQuery pq = datastore.prepare(q);
 		List<Entity> creneaux = pq.asList(FetchOptions.Builder.withDefaults());
 		
