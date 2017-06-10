@@ -36,7 +36,7 @@ public class RoomEndPoint {
 	        path = "creneaux/get/{start}/{end}",
 	        httpMethod = HttpMethod.GET
 	    )
-	public List<Entity> getCreneauxLibres (@Named("start") String start, @Named("end") String end) throws ParseException {
+	public List<Entity> getCreneaux (@Named("start") String start, @Named("end") String end) throws ParseException {
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 		final Date startDate = sdf.parse(start);
 		final Date endDate = sdf.parse(end);
@@ -54,5 +54,20 @@ public class RoomEndPoint {
 		List<Entity> creneaux = pq.asList(FetchOptions.Builder.withDefaults());
 		
 		return creneaux;
+	}
+	
+	@ApiMethod(
+	        path = "creneaux/get/{start}/{end}/{salle}",
+	        httpMethod = HttpMethod.POST
+	    )
+	public void setCreneau(@Named("start") String start, @Named("end") String end, @Named("salle") String salle) throws ParseException {
+		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+		final Date startDate = sdf.parse(start);
+		final Date endDate = sdf.parse(end);
+		Entity creneau = new Entity("Creneau");
+		creneau.setProperty("start", startDate.getTime());
+		creneau.setProperty("end", endDate.getTime());
+		creneau.setProperty("salle", salle);
+		datastore.put(creneau);
 	}
 }
