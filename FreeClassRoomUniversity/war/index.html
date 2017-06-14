@@ -1,11 +1,26 @@
 <!doctype html>
 <html ng-app="todoApp">
   <head>
+  	<link href="node_modules/angular/angular-csp.css" rel="stylesheet">
   	<link href="node_modules/angular-bootstrap-calendar/dist/css/angular-bootstrap-calendar.min.css" rel="stylesheet">
-  	
+  	<link href="node_modules/angular-ui-bootstrap/dist/ui-bootstrap-csp.css" rel="stylesheet">
+  	<link href="node_modules/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+  	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  	<link href="node_modules/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet">
+  
   	<script src="node_modules/angular/angular.min.js"></script>
-	<script src="node_modules/angular-bootstrap-calendar/dist/js/angular-bootstrap-calendar-tpls.min.js"></script>
-    <script src="node_modules/angular-route/angular-route.min.js"></script>
+  	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+  	<script src="node_modules/angular-route/angular-route.min.js"></script>
+  	<script src="node_modules/angular-touch/angular-touch.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  	<script src="node_modules/moment/min/moment.min.js"></script>
+    <script src="node_modules/fullcalendar/dist/fullcalendar.min.js"></script>
+    <script src="node_modules/fullcalendar/dist/gcal.min.js"></script>
+    <script src="node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"></script>
+    <script src="node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js"></script>
+    <script src="node_modules/angular-bootstrap-calendar/dist/js/angular-bootstrap-calendar-tpls.min.js"></script>
+  	<script src="node_modules/angular-bootstrap-calendar/dist/js/angular-bootstrap-calendar.min.js"></script>
+    <script src="node_modules/interactjs/dist/interact.min.js"></script>
     <script src="angular/app.js"></script>
   </head>
   <body>
@@ -26,8 +41,7 @@
                placeholder="add new todo here">
         <input class="btn-primary" type="submit" value="add">
       </form>
-    </div>
-    <mwl-calendar
+      <mwl-calendar
 	    view="calendarView"
 	    view-date="viewDate"
 	    events="events"
@@ -36,5 +50,6 @@
 	    on-event-times-changed="calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
 	    cell-is-open="true">
 	</mwl-calendar>
+    </div>
   </body>
 </html>
