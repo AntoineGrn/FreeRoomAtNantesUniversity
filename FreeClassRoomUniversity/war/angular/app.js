@@ -1,10 +1,15 @@
 angular.module('todoApp', ['ngRoute']).controller('app', function() {})
 
 $(document).ready(function() {
+	$('#datetimepickerDebut').datetimepicker({
+		locale: 'fr'
+	});
+	$('#datetimepickerFin').datetimepicker({
+		locale: 'fr'
+	});
     $('#calendar').fullCalendar({
-        // put your options and callbacks here
     	header: {
-			left: 'prev,next today',
+			left: 'prev,next today myCustomButton',
 			center: 'title',
 			right: 'month,agendaWeek,agendaDay'
 		},
@@ -15,5 +20,28 @@ $(document).ready(function() {
         weekends: false,
         local: 'fr',
         weekNumbers: true,
+        events: [
+			{
+				title: 'All Day Event',
+				start: moment('2017-06-15T12:00:00'),
+				end: moment('2017-06-15T15:00:00'),
+			}
+		],
+		customButtons: {
+			myCustomButton: {
+	            text: 'Ajouter une réservation',
+	            click: function() {
+	            	$('#AjoutResaModale').modal('show');
+	            }
+	        }
+	    },
+	    eventClick: function(calEvent, jsEvent, view) {
+	        alert('Event: ' + calEvent.title);
+	        alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+	        alert('View: ' + view.name);
+	        // change the border color just for fun
+	        $(this).css('border-color', 'red');
+
+	    }
     })
 });

@@ -1,12 +1,15 @@
 <!doctype html>
 <html ng-app="todoApp">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <head>
   	<link href="node_modules/angular/angular-csp.css" rel="stylesheet">
   	<link href="node_modules/angular-bootstrap-calendar/dist/css/angular-bootstrap-calendar.min.css" rel="stylesheet">
   	<link href="node_modules/angular-ui-bootstrap/dist/ui-bootstrap-csp.css" rel="stylesheet">
   	<link href="node_modules/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
   	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  	<link href="node_modules/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
   	<link href="node_modules/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet">
+  	<link href="angular/app.css" rel="stylesheet">
   
   	<script src="node_modules/angular/angular.min.js"></script>
   	<script src="node_modules/jquery/dist/jquery.min.js"></script>
@@ -14,6 +17,7 @@
   	<script src="node_modules/angular-touch/angular-touch.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
   	<script src="node_modules/moment/min/moment.min.js"></script>
+  	<script src="node_modules/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
     <script src="node_modules/fullcalendar/dist/fullcalendar.min.js"></script>
     <script src="node_modules/fullcalendar/dist/locale-all.js"></script>
     <script src="node_modules/fullcalendar/dist/locale/fr.js"></script>
@@ -26,9 +30,39 @@
     <script src="angular/app.js"></script>
   </head>
   <body>
-    <h2>Todo</h2>
+    <h2></h2>
     <div ng-controller="app">
       <div id='calendar'></div>
     </div>
+
+  <div id="AjoutResaModale" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+	  <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title">Ajout d'une réservation</h4>
+	      </div>
+	      <div class="modal-body">
+	        Titre:</br> <input type="text" name="Titre" placeholder="Titre de l'evènement"></br>
+	        Début: <div class='input-group date' id='datetimepickerDebut'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+	        Fin: <div class='input-group date' id='datetimepickerFin'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
   </body>
 </html>
