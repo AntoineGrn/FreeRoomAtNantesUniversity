@@ -1,0 +1,13 @@
+#page-top{
+	.divMessageFlash{
+		width: 20em;
+		rigth:0;
+		position: fixed;
+		z-index: 1000000000;
+	}
+}
+#calendar{
+		width: 800px;
+		text-align: center;
+	}
+
