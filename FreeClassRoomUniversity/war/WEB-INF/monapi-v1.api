@@ -40,14 +40,14 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "monapi.roomEndPoint.getCreneauxLibres" : {
-      "path" : "creneaux/get/{start}/{end}",
-      "httpMethod" : "GET",
+    "monapi.roomEndPoint.setCreneau" : {
+      "path" : "creneaux/get/{start}/{end}/{salle}",
+      "httpMethod" : "POST",
       "authLevel" : "NONE",
       "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
       "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "service.RoomEndPoint.getCreneauxLibres",
+      "rosyMethod" : "service.RoomEndPoint.setCreneau",
       "request" : {
         "parameters" : {
           "start" : {
@@ -55,6 +55,56 @@
             "required" : true
           },
           "end" : {
+            "type" : "string",
+            "required" : true
+          },
+          "salle" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "monapi.roomEndPoint.getCreneaux" : {
+      "path" : "creneaux/get/{start}/{end}",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "service.RoomEndPoint.getCreneaux",
+      "request" : {
+        "parameters" : {
+          "start" : {
+            "type" : "string",
+            "required" : true
+          },
+          "end" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "monapi.roomEndPoint.getCreneauxSalle" : {
+      "path" : "creneaux/get/{salle}",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "service.RoomEndPoint.getCreneauxSalle",
+      "request" : {
+        "parameters" : {
+          "salle" : {
             "type" : "string",
             "required" : true
           }
@@ -146,7 +196,14 @@
           "$ref" : "EntityCollection"
         }
       },
-      "service.RoomEndPoint.getCreneauxLibres" : {
+      "service.RoomEndPoint.setCreneau" : {
+      },
+      "service.RoomEndPoint.getCreneaux" : {
+        "response" : {
+          "$ref" : "EntityCollection"
+        }
+      },
+      "service.RoomEndPoint.getCreneauxSalle" : {
         "response" : {
           "$ref" : "EntityCollection"
         }
