@@ -36,6 +36,7 @@ $(document).ready(function() {
 	        }
 	    },
 	    eventClick: function(calEvent, jsEvent, view) {
+	    	console.log(calEvent);
 	        alert('Event: ' + calEvent.title);
 	        alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
 	        alert('View: ' + view.name);

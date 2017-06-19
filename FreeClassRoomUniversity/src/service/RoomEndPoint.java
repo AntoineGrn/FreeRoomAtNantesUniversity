@@ -70,4 +70,18 @@ public class RoomEndPoint {
 		creneau.setProperty("salle", salle);
 		datastore.put(creneau);
 	}
+	
+	@ApiMethod(
+	        path = "creneaux/get/{salle}",
+	        httpMethod = HttpMethod.GET
+	    )
+	public List<Entity> getCreneauxSalle(@Named("salle") String salle) throws ParseException {
+		Filter roomFilter = new Query.FilterPredicate("salle", FilterOperator.GREATER_THAN_OR_EQUAL, salle);
+		Query q = new Query("Creneau").setFilter(roomFilter);
+		System.out.println(q);
+		PreparedQuery pq = datastore.prepare(q);
+		List<Entity> creneaux = pq.asList(FetchOptions.Builder.withDefaults());
+		
+		return creneaux;
+	}
 }
