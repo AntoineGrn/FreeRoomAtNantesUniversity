@@ -25,21 +25,6 @@
     "maxAge" : 0
   },
   "methods" : {
-    "monapi.roomEndPoint.getRooms" : {
-      "path" : "entitycollection",
-      "httpMethod" : "GET",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "service.RoomEndPoint.getRooms",
-      "request" : {
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "monapi.roomEndPoint.getCreneaux" : {
       "path" : "creneaux/get/{start}/{end}",
       "httpMethod" : "GET",
@@ -114,6 +99,21 @@
       "response" : {
         "body" : "autoTemplate(backendResponse)"
       }
+    },
+    "monapi.roomEndPoint.getRooms" : {
+      "path" : "entitycollection",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "service.RoomEndPoint.getRooms",
+      "request" : {
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
     }
   },
   "descriptor" : {
@@ -134,11 +134,11 @@
           "appId" : {
             "type" : "string"
           },
-          "propertiesFrom" : {
-            "$ref" : "Entity"
-          },
           "namespace" : {
             "type" : "string"
+          },
+          "propertiesFrom" : {
+            "$ref" : "Entity"
           },
           "properties" : {
             "$ref" : "JsonMap"
@@ -191,11 +191,6 @@
       }
     },
     "methods" : {
-      "service.RoomEndPoint.getRooms" : {
-        "response" : {
-          "$ref" : "EntityCollection"
-        }
-      },
       "service.RoomEndPoint.getCreneaux" : {
         "response" : {
           "$ref" : "EntityCollection"
@@ -204,6 +199,11 @@
       "service.RoomEndPoint.setCreneau" : {
       },
       "service.RoomEndPoint.getCreneauxSalle" : {
+        "response" : {
+          "$ref" : "EntityCollection"
+        }
+      },
+      "service.RoomEndPoint.getRooms" : {
         "response" : {
           "$ref" : "EntityCollection"
         }

@@ -76,7 +76,7 @@ public class RoomEndPoint {
 	        httpMethod = HttpMethod.GET
 	    )
 	public List<Entity> getCreneauxSalle(@Named("salle") String salle) throws ParseException {
-		Filter roomFilter = new Query.FilterPredicate("salle", FilterOperator.GREATER_THAN_OR_EQUAL, salle);
+		Filter roomFilter = new Query.FilterPredicate("salle", FilterOperator.EQUAL, salle);
 		Query q = new Query("Creneau").setFilter(roomFilter);
 		System.out.println(q);
 		PreparedQuery pq = datastore.prepare(q);
