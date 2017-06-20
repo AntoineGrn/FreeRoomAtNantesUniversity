@@ -5,6 +5,10 @@
 		position: fixed;
 		z-index: 1000000000;
 	}
+	
+	.calendarUniversity{
+		background-color : teal;
+	}
 }
 #calendar{
 		width: 800px;
