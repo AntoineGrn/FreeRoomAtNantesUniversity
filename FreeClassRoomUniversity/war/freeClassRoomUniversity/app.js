@@ -134,10 +134,10 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	        setTimeout(function () {
 	            _this.scope.$apply(function () {
 	                _this.scope.flash = null;
+	                _this.scope.hasFlash = false;
 	            });
 	        }, 2000);
 	    }, 2000);
-	    _this.scope.hasFlash = false;
 	}
 	
 	// watch sur la salle selectionnee pour recharger le calendrier par la suite

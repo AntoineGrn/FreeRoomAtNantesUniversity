@@ -14,6 +14,8 @@ import javax.servlet.http.*;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 
 @SuppressWarnings("serial")
 public class FreeClassRoomUniversityServlet extends HttpServlet {
@@ -25,6 +27,7 @@ public class FreeClassRoomUniversityServlet extends HttpServlet {
 	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		try {
+			deleteDataStore();
 			initRoomsListAndNamesList();
 			for (String room : rooms) {
 				String urlRoom = urlSalle + room.replace(".html", ".ics");
@@ -110,5 +113,18 @@ public class FreeClassRoomUniversityServlet extends HttpServlet {
 	    	}
 	    	line = reader.readLine();
 	    }
+	}
+	
+	private void deleteDataStore(){
+		Query deleteCreneaux = new Query("Creneau");
+    	PreparedQuery pq = datastore.prepare(deleteCreneaux);
+    	for (Entity result : pq.asIterable()) {
+    		datastore.delete(result.getKey()); 
+    	}
+    	Query deleteSalle = new Query("Room");
+    	PreparedQuery pqSalle = datastore.prepare(deleteSalle);
+    	for (Entity result : pqSalle.asIterable()) {
+    		datastore.delete(result.getKey()); 
+    	}
 	}
 }
