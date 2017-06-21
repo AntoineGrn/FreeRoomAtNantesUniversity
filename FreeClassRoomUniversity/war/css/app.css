@@ -9,6 +9,14 @@
 	.calendarUniversity{
 		background-color : teal;
 	}
+	
+	.containerFormReservation{
+		padding-top: 2em;
+	}
+	
+	.formStyle{
+		color: black;
+	}
 }
 #calendar{
 		width: 800px;
