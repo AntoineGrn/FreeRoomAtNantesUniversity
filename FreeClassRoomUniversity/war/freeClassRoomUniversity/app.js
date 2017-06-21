@@ -6,7 +6,7 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	this.http = $http;
 	this.scope.flash = null;
 	const _this = this;
-	_this.scope.hasFlash = false;
+	this.scope.hasFlash = false;
 	
 	// appel web service pour recuperer toutes les salles et formattage de la reponse
 	this.scope.getAllUniversityRoom = function() {
@@ -96,12 +96,12 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
     		_this.http(
     				{
     					method: 'GET',
-    					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/monapi/v1/monapi.roomEndPoint.getCreneauxSalle',
-    					params: {salle:recherche.roomSelected.libelle},
+    					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/get/' + recherche.roomSelected.name.split(".", 1),
     					headers : {'Accept' : 'application/json'}
     				}
     				).then(function successCallback(response) {
-    					console.log(response)
+    					console.log(response.data.items[0].properties.start);
+    					console.log(new Date(response.data.items[0].properties.start * 1000).toUTCString());
     				}, function errorCallback(response) {
     					console.log("erreur inattendue");
     				});
@@ -127,37 +127,40 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
     	}
     }
 	// definition de la methode flash pour les notifications 
-	this.setFlash = function($type, $message) {
+	this.scope.setFlash = function($type, $message) {
 	    _this.scope.flash = {type: $type, message: $message};
 	    setTimeout(function () {
 	        angular.element('.flash-removable').addClass('fade');
-	        console.log("methode flash");
 	        setTimeout(function () {
 	            _this.scope.$apply(function () {
 	                _this.scope.flash = null;
 	            });
-	        }, 5000);
-	        _this.scope.hasFlash = false;
-	    }, 5000);
+	        }, 2000);
+	    }, 2000);
+	    _this.scope.hasFlash = false;
 	}
 	
 	// watch sur la salle selectionnee pour recharger le calendrier par la suite
 	// TODO appeler la méthode de chargement des creneaux de la salle directement pour eviter un clic
-	$scope.$watch("recherche.roomSelected", function() {
-		_this.scope.hasFlash = true;
-		_this.setFlash("info", "Vous avez selectionné une salle");
+	this.scope.$watch("recherche.roomSelected", function() {
+		if (_this.scope.recherche) {
+			_this.scope.hasFlash = true;
+			_this.scope.setFlash("info", "Vous avez selectionné une salle");
+		}		
 	});
-	
-	// méthode non utilisée mais disponible pour l'authentification par google
+	const html = "";
+	// méthode utilisée pour l'authentification par google
 	this.scope.onSignIn = function(googleUser) {
 	  const profile = googleUser.getBasicProfile();
 	  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
 	  console.log('Name: ' + profile.getName());
 	  console.log('Image URL: ' + profile.getImageUrl());
 	  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+	  html = $(".g-signin2").html();
+	  $(".g-signin2").html('<a href="#" onclick="signOut();">Déconnexion</a>');
 	}
 
-	// méthode non utilisée mais disponible pour l'authentification par google
+	// méthode utilisée pour la deconnexion par google
 	this.scope.signOut = function() {
 	  var auth2 = gapi.auth2.getAuthInstance();
 	  auth2.signOut().then(function () {

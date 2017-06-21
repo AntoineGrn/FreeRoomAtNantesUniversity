@@ -6,7 +6,7 @@
 <!-- with a "Standards Mode" doctype is supported, -->
 <!-- but may lead to some differences in layout.   -->
 
-<html ng-app="freeClassRoomApp">
+<html ng-app="freeClassRoomApp" id="pageTop">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="google-signin-client_id" content="1039699124319-0inim72rnaho3futivmb62ggqrl73u5t.apps.googleusercontent.com">
@@ -22,9 +22,10 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
 
     <!-- Theme CSS -->
-    <link href="css/grayscale.min.css" rel="stylesheet">
+    <!--  -->
     <!-- Déclaration de app.css -->
-	<link href="/css/app.css" rel="stylesheet" type="text/css"></link>
+	<link href="app.css" rel="stylesheet" type="text/css">
+	<link href="css/grayscale.min.css" rel="stylesheet">
     <!-- jQuery -->
     <script src="vendor/jquery/jquery.js"></script>
     
@@ -88,11 +89,14 @@
 		                    <li>
 		                        <a class="page-scroll" href="#calendar">Calendar</a>
 		                    </li>
-		                    <li>
+		                    <li class="g-signin2" data-onsuccess="onSignIn">
+		                    	<a href="#" ng-click="signOut()">Sign out</a>
+		                    </li>
+		                    <!-- <li>
 		                        <span class="g-signin2" id="googleSignIn" ng-click="onSignIn(googleUser)">
 								    <span id="signInButton"></span>
 								</span>
-		                    </li>
+		                    </li> -->
 		                </ul>
 		            </div>
 		            <!-- /.navbar-collapse -->
@@ -174,7 +178,7 @@
 				        <h4 class="modal-title">Réserver un créneau</h4>
 				      </div>
 				      <div class="modal-body">
-					      <form name="formulaireAjoutReservation" ng-submit="submitForm(formulaireAjoutReservation.$valid, reservation)" novalidate class="simple-form">
+					      <form id="formResaStyle" name="formulaireAjoutReservation" ng-submit="submitForm(formulaireAjoutReservation.$valid, reservation)" novalidate class="simple-form">
 		            		<div class="form-group col-xs-12">
 			            		<label class="col-xs-5">Titre/Objet de la réservation :</label>
 				                <input class="col-xs-5 form-control" required="required" name="title" ng-model="reservation.title" />
@@ -192,11 +196,12 @@
 				                <select class="col-xs-5 form-control" required="required" name="creneau" ng-model="reservation.creneauSelected" ng-options="hour.libelle for hour in listeCreneauxUniversity track by hour.id"></select>
 			            	</div>
 			            	<div class="form-group col-xs-12">
-				            	<label class="col-xs-5">Saisissez le nombre de personnes présentes (max : 30 personnes) :</label>
+				            	<label class="col-xs-7">Saisissez le nombre de personnes présentes (max : 30 personnes) :</label>
 				            	<input class="col-xs-5 form-control" required="required" type="number" name="capacite" min="1" max="30" ng-model="reservation.capaciteSalle" />
 			            	</div>
 			            	<div class="form-group col-xs-12">
-			            		<input type="checkbox" ng-click="showAdresseMailOK = !showAdresseMailOK">Souhaitez-vous indiquez les adresses mails des personnes qui seront présentes ?</checkbox>
+			            		<input type="checkbox" ng-click="showAdresseMailOK = !showAdresseMailOK">
+			            		<span>Souhaitez-vous indiquez les adresses mails des personnes qui seront présentes ?</span>
 			            	</div>
 			            	<div class="form-group col-xs-12" ng-if="showAdresseMailOK" >
 			            		<label class="col-xs-5">Saisissez une adresse email :</label>

@@ -1,0 +1,28 @@
+
+#pageTop .divMessageFlash{
+	width: 20em;
+	right:0;
+	position: fixed;
+	z-index: 1000000000;
+}
+
+#pageTop .containerFormReservation {
+	padding-top: 2em;
+}
+
+#pageTop .formStyle {
+	color: black;
+}
+	
+#formResaStyle label, #formResaStyle span {
+	color: black;
+}
+#formResaStyle input, #formResaStyle select {
+	width: auto;
+	color: black;
+}
+#calendar{
+		width: 800px;
+		text-align: center;
+	}
+
