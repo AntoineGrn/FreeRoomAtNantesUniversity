@@ -58,7 +58,7 @@ public class RoomEndPoint {
 	
 	@ApiMethod(
 	        path = "creneaux/get/{start}/{end}/{salle}",
-	        httpMethod = HttpMethod.POST
+	        httpMethod = HttpMethod.GET
 	    )
 	public void setCreneau(@Named("start") String start, @Named("end") String end, @Named("salle") String salle) throws ParseException {
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");

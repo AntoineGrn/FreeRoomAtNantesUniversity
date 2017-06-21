@@ -88,7 +88,7 @@
     },
     "monapi.roomEndPoint.setCreneau" : {
       "path" : "creneaux/get/{start}/{end}/{salle}",
-      "httpMethod" : "POST",
+      "httpMethod" : "GET",
       "authLevel" : "NONE",
       "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
