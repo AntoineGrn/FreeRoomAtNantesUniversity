@@ -26,7 +26,7 @@
   },
   "methods" : {
     "monapi.roomEndPoint.setCreneau" : {
-      "path" : "creneaux/get/{start}/{end}/{salle}",
+      "path" : "creneaux/get/{userId}/{start}/{end}/{salle}/{mail}/{nbPersonne}/{desc}",
       "httpMethod" : "GET",
       "authLevel" : "NONE",
       "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
@@ -35,6 +35,10 @@
       "rosyMethod" : "service.RoomEndPoint.setCreneau",
       "request" : {
         "parameters" : {
+          "userId" : {
+            "type" : "string",
+            "required" : true
+          },
           "start" : {
             "type" : "string",
             "required" : true
@@ -44,6 +48,18 @@
             "required" : true
           },
           "salle" : {
+            "type" : "string",
+            "required" : true
+          },
+          "mail" : {
+            "type" : "string",
+            "required" : true
+          },
+          "nbPersonne" : {
+            "type" : "string",
+            "required" : true
+          },
+          "desc" : {
             "type" : "string",
             "required" : true
           }
