@@ -17,10 +17,12 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.search.DateUtil;
 
 @Api(name = "monapi", version="v1")
 public class RoomEndPoint {
 	public DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	final long hoursInMillis = 60L * 60L * 1000L;
 	
 	public List<Entity> getRooms () {
 		Query q = new Query("Room");
@@ -57,18 +59,22 @@ public class RoomEndPoint {
 	}
 	
 	@ApiMethod(
-	        path = "creneaux/get/{start}/{end}/{salle}",
+	        path = "creneaux/get/{userId}/{start}/{end}/{salle}/{mail}/{nbPersonne}/{desc}",
 	        httpMethod = HttpMethod.GET
 	    )
-	public void setCreneau(@Named("start") String start, @Named("end") String end, @Named("salle") String salle) throws ParseException {
+	public void setCreneau(@Named("userId") String userId, @Named("start") String start, @Named("end") String end, @Named("salle") String salle, @Named("mail") String mail, @Named("nbPersonne") String nbPersonne, @Named("desc") String desc) throws ParseException {
+		
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 		final Date startDate = sdf.parse(start);
 		final Date endDate = sdf.parse(end);
-		Entity creneau = new Entity("Creneau");
-		creneau.setProperty("start", startDate.getTime());
-		creneau.setProperty("end", endDate.getTime());
-		creneau.setProperty("salle", salle);
-		datastore.put(creneau);
+		Entity resa = new Entity("Reservation");
+		resa.setProperty("start", startDate.getTime());
+		resa.setProperty("end", endDate.getTime());
+		resa.setProperty("salle", salle);
+		resa.setProperty("mail", mail);
+		resa.setProperty("nbPersonne", nbPersonne);
+		resa.setProperty("descritpion", desc);
+		datastore.put(resa);
 	}
 	
 	@ApiMethod(
@@ -82,10 +88,10 @@ public class RoomEndPoint {
 		PreparedQuery pq = datastore.prepare(q);
 		List<Entity> creneaux = pq.asList(FetchOptions.Builder.withDefaults());
 		for (Entity creneau : creneaux) {
-			Date startEvent = new Date((long) creneau.getProperty("start"));
+			Date startEvent = new Date((long) creneau.getProperty("start")+ (2L * hoursInMillis));
 			creneau.setProperty("start", startEvent);
 			
-			Date endEvent = new Date((long) creneau.getProperty("end"));
+			Date endEvent = new Date((long) creneau.getProperty("end")+ (2L * hoursInMillis));
 			creneau.setProperty("end", endEvent);
 		}
 		
