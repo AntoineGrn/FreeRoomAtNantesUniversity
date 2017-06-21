@@ -89,7 +89,7 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
     };
     
     // appel au service REST pour recuperer les créneaux de la salle selectionnee 
-    // TODO ajouter la liste des creneaux au calendier
+    // ajouter la liste des creneaux au calendier
     this.scope.rechercherDisponibilites = function(recherche) {
     	if (_this.scope.formulaireRechercheSalleDispo.$valid) {
     		_this.scope.nomSalleSelected = recherche.roomSelected.libelle;
@@ -100,8 +100,19 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
     					headers : {'Accept' : 'application/json'}
     				}
     				).then(function successCallback(response) {
-    					console.log(response.data.items[0].properties.start);
-    					console.log(new Date(response.data.items[0].properties.start * 1000).toUTCString());
+    					angular.forEach(response.data.items, function(item) {
+    						$scope.listeEventsDatastore.push({
+    							date: new Date(item.properties.start).getDay() + "/" + new Date(item.properties.start).getMonth() + "/" + new Date(item.properties.start).getYear(),
+    							creneau: new Date(item.properties.start).getHour() + new Date(item.properties.end).getHour(),
+    				            salle: item.properties.salle,
+    						});
+    						$scope.events.push({
+    				            start: item.properties.start,
+    				            end: item.properties.end,
+    				            salle: item.properties.salle,
+    				            className: ['creneauOccupe']
+    				        });
+    					});
     				}, function errorCallback(response) {
     					console.log("erreur inattendue");
     				});
@@ -115,7 +126,8 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
             end: "date+ creneau fin",
             salle: salle,
             capacite: capacite,
-            listeEmail: listeEmail
+            listeEmail: listeEmail,
+            className: ['creneauReserve']
         });
     	$scope.eventSources = [$scope.events];
     }
@@ -144,6 +156,14 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	// TODO appeler la méthode de chargement des creneaux de la salle directement pour eviter un clic
 	this.scope.$watch("recherche.roomSelected", function() {
 		if (_this.scope.recherche) {
+			_this.scope.hasFlash = true;
+			_this.scope.setFlash("info", "Vous avez selectionné une salle");
+		}		
+	});
+	// watch sur la date selectionnee pour ajouter une reservation
+	// filtrage sur les créneaux disponibles à cette date
+	this.scope.$watch("recherche.roomSelected", function() {
+		if (_this.scope.recherche.roomSelected) {
 			_this.scope.hasFlash = true;
 			_this.scope.setFlash("info", "Vous avez selectionné une salle");
 		}		

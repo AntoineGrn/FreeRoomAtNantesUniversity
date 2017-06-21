@@ -21,6 +21,16 @@
 	width: auto;
 	color: black;
 }
+
+#pageTop .creneauOccupe{
+	background-color: #ff5959;
+}
+#pageTop .creneauReserve{
+	background-color: #b3ffff;
+}
+#pageTop .creneauLibre{
+	background-color: #91ff91;
+}
 #calendar{
 		width: 800px;
 		text-align: center;
