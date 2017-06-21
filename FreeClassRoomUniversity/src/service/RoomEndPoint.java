@@ -24,6 +24,10 @@ public class RoomEndPoint {
 	public DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	final long hoursInMillis = 60L * 60L * 1000L;
 	
+	@ApiMethod(
+	        path = "rooms/",
+	        httpMethod = HttpMethod.GET
+	    )
 	public List<Entity> getRooms () {
 		Query q = new Query("Room");
 		List<Entity> rooms = datastore.prepare(q).asList(FetchOptions.Builder.withDefaults());
@@ -60,7 +64,7 @@ public class RoomEndPoint {
 	
 	@ApiMethod(
 	        path = "creneaux/get/{userId}/{start}/{end}/{salle}/{mail}/{nbPersonne}/{desc}",
-	        httpMethod = HttpMethod.GET
+	        httpMethod = HttpMethod.POST
 	    )
 	public void setCreneau(@Named("userId") String userId, @Named("start") String start, @Named("end") String end, @Named("salle") String salle, @Named("mail") String mail, @Named("nbPersonne") String nbPersonne, @Named("desc") String desc) throws ParseException {
 		

@@ -144,7 +144,8 @@
 		            <div class="col-xs-12">
 		                <h2>Calendrier salle {{recherche.roomSelected.libelle}}</h2>
 		                <span>
-		                	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddResaModale">
+		                <!-- TODO a rajouter sur le bouton : ng-disabled="roomSelected === undefined" -->
+		                	<button  type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddResaModale">
                             	Ajouter un événement
                         	</button>
 		                </span>
@@ -185,7 +186,7 @@
 		            		</div>
 		            		<div class="form-group col-xs-12">
 			            		<label class="col-xs-5">Salle choisie:</label>
-				                <input class="col-xs-5 form-control" required="required" name="room" ng-model="recherche.roomSelected.libelle"/>
+				                <input class="col-xs-5 form-control" disabled required="required" name="room" ng-model="recherche.roomSelected.libelle"/>
 		            		</div>
 		            		<div class="form-group col-xs-12">
 				                <label class="col-xs-5">Choisissez une date :</label>
@@ -203,9 +204,10 @@
 			            		<input type="checkbox" ng-click="showAdresseMailOK = !showAdresseMailOK">
 			            		<span>Souhaitez-vous indiquez les adresses mails des personnes qui seront présentes ?</span>
 			            	</div>
-			            	<div class="form-group col-xs-12" ng-if="showAdresseMailOK" >
+			            	<div ng-repeat="email in listeEmails" class="form-group col-xs-12" ng-if="showAdresseMailOK" >
 			            		<label class="col-xs-5">Saisissez une adresse email :</label>
-			            		<input class="col-xs-5 form-control" type="email" name="email" ng-required="reservation.capaciteSalle > 0" ng-model="reservation.adresseMail" />
+			            		<input class="col-xs-5 form-control inputEmailForm" type="email" name="email" ng-required="reservation.capaciteSalle > 0" ng-model="reservation.email[$index]" />
+			            		<span class="iconAddEmailAdress glyphicon glyphicon-plus-sign" aria-hidden="true" ng-click="addNewInputEmail()"></span>
 			            	</div>
 			            	<button type="submit" class="btn btn-primary" ng-disabled="formulaireAjoutReservation.$invalid" >Réserver</button>
 		            	</form>
