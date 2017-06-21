@@ -81,7 +81,16 @@ public class RoomEndPoint {
 		System.out.println(q);
 		PreparedQuery pq = datastore.prepare(q);
 		List<Entity> creneaux = pq.asList(FetchOptions.Builder.withDefaults());
+		for (Entity creneau : creneaux) {
+			Date startEvent = new Date((long) creneau.getProperty("start"));
+			creneau.setProperty("start", startEvent);
+			
+			Date endEvent = new Date((long) creneau.getProperty("end"));
+			creneau.setProperty("end", endEvent);
+		}
 		
+		System.out.println(creneaux);
+				
 		return creneaux;
 	}
 }
