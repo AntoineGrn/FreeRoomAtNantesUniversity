@@ -1,4 +1,4 @@
-const app = angular.module('freeClassRoomApp', ['ui.calendar', 'ui.bootstrap']);
+const app = angular.module('freeClassRoomApp', ['ui.calendar', 'ui.bootstrap'])
 
 const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	// init variables
@@ -8,13 +8,27 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	const _this = this;
 	this.scope.hasFlash = false;
 	this.scope.listeEmails = [{email:""}];
+	this.scope.events = [];
+	this.scope.listeEventsDatastore = [];
+	this.scope.reservation = {};
+	this.scope.userId = null;
+	
+	// liste de tous les créneaux en dur car ne change pas (à filtrer suivant ceux déjà pris)
+	$scope.listeCreneauxUniversity = [
+		{id: 1,libelle: "8h00 - 9h20"},
+		{id: 2,libelle: "9h30 - 10h50"},
+		{id: 3,libelle: "11h00 - 12h20"},
+		{id: 4,libelle: "14h00 - 15h20"},
+		{id: 5,libelle: "15h30 - 16h50"},
+		{id: 6,libelle: "17h00 - 18h20"}
+	];
 	
 	// appel web service pour recuperer toutes les salles et formattage de la reponse
 	this.scope.getAllUniversityRoom = function() {
 		_this.http(
 		{
 			method: 'GET',
-			url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/entitycollection'
+			url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/rooms/get'
 		}
 		).then(function successCallback(response) {
 			const result = response.data.items.map(function(item) {
@@ -25,7 +39,6 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 				};
 				return roomStandard;
 			})
-			console.log(result);
 			$scope.listeRoomUniversity = result;
 		}, function errorCallback(response) {
 			console.log("erreur inattendue");
@@ -35,11 +48,20 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	this.scope.getAllUniversityRoom();
 	
 	// appel au web service pour ajouter un nouveau creneau de reserver pour une salle, une date, un creneau donné
-	this.scope.addResa = function() {
+	this.scope.addResa = function(reservation) {
 		_this.http(
 		{
-			method: 'GET',
-			url: 'https://1-dot-freeclassroomsuniversity.appspot.com/monapi/v1/monapi.roomEndPoint.setCreneau'
+			method: 'POST',
+			url: 'https://1-dot-freeclassroomsuniversity.appspot.com/monapi/v1/monapi.roomEndPoint.setCreneau',
+			params: {
+				userId: reservation.user, 
+				start: reservation.start, 
+				end: reservation.end, 
+				salle: reservation.salle, 
+				mail: reservation.listeMails, 
+				nbPersonne: reservation.capacite, 
+				desc: reservation.description
+			}
 		}
 		).then(function successCallback(response) {
 			console.log(response)
@@ -48,15 +70,6 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 		});
 	}
 
-	// liste de tous les créneaux en dur car ne change pas (à filtrer suivant ceux déjà pris)
-	$scope.listeCreneauxUniversity = [
-		{id: 1,libelle: "8h00 - 9h20"},
-		{id: 2,libelle: "9h30 - 10h50"},
-		{id: 3,libelle: "11h00 - 12h20"},
-		{id: 4,libelle: "14h00 - 15h20"},
-		{id: 5,libelle: "15h30 - 16h50"},
-		{id: 5,libelle: "17h00 - 18h20"}
-	];
 	// définition des événements du calendrier
 	$scope.eventSources = [$scope.events];
 	
@@ -81,32 +94,35 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
     // appel au service REST pour recuperer les créneaux de la salle selectionnee 
     // ajouter la liste des creneaux au calendier
     this.scope.rechercherDisponibilites = function(recherche) {
-    	if (_this.scope.formulaireRechercheSalleDispo.$valid) {
-    		_this.scope.nomSalleSelected = recherche.roomSelected.libelle;
-    		_this.http(
-    				{
-    					method: 'GET',
-    					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/get/' + recherche.roomSelected.name.split(".", 1),
-    					headers : {'Accept' : 'application/json'}
-    				}
-    				).then(function successCallback(response) {
-    					angular.forEach(response.data.items, function(item) {
-    						$scope.listeEventsDatastore.push({
-    							date: new Date(item.properties.start).getDay() + "/" + new Date(item.properties.start).getMonth() + "/" + new Date(item.properties.start).getYear(),
-    							creneau: new Date(item.properties.start).getHour() + new Date(item.properties.end).getHour(),
-    				            salle: item.properties.salle,
-    						});
-    						$scope.events.push({
-    				            start: item.properties.start,
-    				            end: item.properties.end,
-    				            salle: item.properties.salle,
-    				            className: ['creneauOccupe']
-    				        });
-    					});
-    				}, function errorCallback(response) {
-    					console.log("erreur inattendue");
-    				});
-    	}
+		_this.scope.nomSalleSelected = recherche.roomSelected.libelle;
+		_this.http(
+				{
+					method: 'GET',
+					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/get/null/' + recherche.roomSelected.name.split(".", 1),
+					headers : {'Accept' : 'application/json'}
+				}
+				).then(function successCallback(response) {
+					if (response.data) {
+						angular.forEach(response.data.items, function(item) {
+							_this.scope.listeEventsDatastore.push({
+								date: new Date(item.properties.start).getDay() + "/" + new Date(item.properties.start).getMonth() + "/" + new Date(item.properties.start).getYear(),
+								creneau: new Date(item.properties.start).getHours() + "h" + new Date(item.properties.start).getMinutes() + " - " + new Date(item.properties.end).getHours() + "h" + new Date(item.properties.end).getMinutes(),
+					            salle: item.properties.salle,
+					            title: "COURS"
+							});
+							_this.scope.events.push({
+					            start: item.properties.start,
+					            end: item.properties.end,
+					            title: "COURS",
+					            className: ['creneauOccupe']
+					        });
+							_this.scope.eventSources = [_this.scope.events];
+						});
+						//_this.scope.creneauxLibres = $scope.listeCreneauxUniversity;
+					}
+				}, function errorCallback(response) {
+					console.log("erreur inattendue");
+				});
     }
     // méthode de création d'un événement dans le calendrier
     this.scope.addEvent = function(title, creneau, salle, capacite, listeEmail, date) {
@@ -126,8 +142,53 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
     this.scope.submitForm = function(formIsValid, recherche){
     	if (formIsValid) {
     		_this.scope.rechercherDisponibilites(recherche);
+    		_this.scope.roomSelected = recherche.roomSelected;
     	}
     }
+    
+    this.scope.submitFormResa = function(formIsValid, reservation){
+    	if (formIsValid) {
+    		let dateHeureStart = null;
+    		let dateHeureEnd = null;
+    		if (reservation.creneau.id === 1) {
+    			dateHeureStart = new Date(reservation.dateSelected).setHours(8, 0);
+        		dateHeureEnd = new Date(reservation.dateSelected).setHours(9,20);
+    		} else if (reservation.creneau.id === 2) {
+    			dateHeureStart = new Date(reservation.dateSelected).setHours(9, 30);
+        		dateHeureEnd = new Date(reservation.dateSelected).setHours(10,50);
+    		} else if (reservation.creneau.id === 3) {
+    			dateHeureStart = new Date(reservation.dateSelected).setHours(11, 0);
+        		dateHeureEnd = new Date(reservation.dateSelected).setHours(12,20);
+    		} else if (reservation.creneau.id === 4) {
+    			dateHeureStart = new Date(reservation.dateSelected).setHours(14, 0);
+        		dateHeureEnd = new Date(reservation.dateSelected).setHours(15,20);
+    		} else if (reservation.creneau.id === 5) {
+    			dateHeureStart = new Date(reservation.dateSelected).setHours(15, 30);
+        		dateHeureEnd = new Date(reservation.dateSelected).setHours(16,50);
+    		} else if (reservation.creneau.id === 6) {
+    			dateHeureStart = new Date(reservation.dateSelected).setHours(17, 0);
+        		dateHeureEnd = new Date(reservation.dateSelected).setHours(18,20);
+    		}
+    		
+    		const reservationStandard = {
+				userId: _this.scope.userId !== null ? _this.scope.userId : null, 
+				start: dateHeureStart, 
+				end: dateHeureEnd, 
+				salle: _this.scope.salleSelected.salle, 
+				mail: listeMails, 
+				nbPersonne: reservation.capacite, 
+				desc: ""
+    		};
+    		_this.scope.events.push({
+	            start: dateHeureStart,
+	            end: dateHeureEnd,
+	            title: "RESERVED BY YOU",
+	            className: ['creneauReserve']
+	        });
+			_this.scope.eventSources = [_this.scope.events];
+    	}
+    }
+    
 	// definition de la methode flash pour les notifications 
 	this.scope.setFlash = function($type, $message) {
 	    _this.scope.flash = {type: $type, message: $message};
@@ -143,9 +204,8 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	}
 	
 	// watch sur la salle selectionnee pour recharger le calendrier par la suite
-	// TODO appeler la méthode de chargement des creneaux de la salle directement pour eviter un clic
-	this.scope.$watch("recherche.roomSelected", function() {
-		if (_this.scope.recherche) {
+	this.scope.$watch("formulaireRechercheSalleDispo", function() {
+		if (_this.scope.recherche && _this.scope.reservation.roomSelected) {
 			_this.scope.hasFlash = true;
 			_this.scope.setFlash("info", "Vous avez selectionné une salle");
 		}		
@@ -156,37 +216,60 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 		console.log(_this.scope.reservation);		
 	});
 	
+	this.scope.verifUserConnected = function() {
+		_this.scope.userId = $("#userId").html();
+	}
+
+	
 	// watch sur la date selectionnee pour ajouter une reservation
 	// filtrage sur les créneaux disponibles à cette date
 	this.scope.$watch("reservation.dateSelected", function() {
-		if (_this.scope.reservation.dateSelected) {
-			// TODO filtrage sur les créneaux disponibles à cette date
+		if (_this.scope.reservation && _this.scope.reservation.dateSelected) {
+			const tmpListeCreneauxOccupes = _this.scope.events.filter(creneau => new Date(creneau.start).getDay() === _this.scope.reservation.dateSelected.getDay() && new Date(creneau.start).getMonth() === _this.scope.reservation.dateSelected.getMonth() && new Date(creneau.start).getYear() === _this.scope.reservation.dateSelected.getYear());
+			_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxUniversity;
+			angular.forEach(tmpListeCreneauxOccupes, function(creneauOccupe) {
+				const heureDebut = new Date(creneauOccupe.start).getHours();
+				if (heureDebut => 8 && heureDebut < 10) {
+					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 1);
+				} else if (heureDebut => 9 && heureDebut < 11) {
+					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 2);
+				} else if (heureDebut => 11 && heureDebut < 13) {
+					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 3);
+				} else if (heureDebut => 14 && heureDebut < 16) {
+					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 4);
+				} else if (heureDebut => 15 && heureDebut < 17) {
+					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 5);
+				} else if (heureDebut => 17 && heureDebut < 19) {
+					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 6);
+				}
+			});
 		}		
 	});
+	
 	
 	this.scope.addNewInputEmail= function() {
 		_this.scope.listeEmails.push({email:""});
 	}
 	
-	const html = "";
-	// méthode utilisée pour l'authentification par google
+	/*var html;
 	this.scope.onSignIn = function(googleUser) {
-	  const profile = googleUser.getBasicProfile();
+	  var profile = googleUser.getBasicProfile();
 	  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
 	  console.log('Name: ' + profile.getName());
 	  console.log('Image URL: ' + profile.getImageUrl());
 	  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 	  html = $(".g-signin2").html();
-	  $(".g-signin2").html('<a href="#" onclick="signOut();">Déconnexion</a>');
+	  $(".g-signin2").html('<a href="#" ng-click="signOut()">Déconnexion</a>');
+	  _this.scope.userId = profile.getId();
 	}
 
-	// méthode utilisée pour la deconnexion par google
 	this.scope.signOut = function() {
 	  var auth2 = gapi.auth2.getAuthInstance();
 	  auth2.signOut().then(function () {
 		  $(".g-signin2").html(html);
+		  _this.scope.user = null;
 	  });
-	}
+	}*/
 	
 	// init google maps ... pour eviter les erreurs en console
 	$scope.map = null;
