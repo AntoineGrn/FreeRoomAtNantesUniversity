@@ -64,11 +64,10 @@ public class RoomEndPoint {
 	}
 	
 	@ApiMethod(
-	        path = "creneaux/get/{userId}/{start}/{end}/{salle}/{mail}/{nbPersonne}/{desc}",
+	        path = "creneaux/post",
 	        httpMethod = HttpMethod.POST
 	    )
 	public void setCreneau(@Named("userId") String userId, @Named("start") String start, @Named("end") String end, @Named("salle") String salle, @Named("mail") String mail, @Named("nbPersonne") String nbPersonne, @Named("desc") String desc) throws ParseException {
-		
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 		final Date startDate = sdf.parse(start);
 		final Date endDate = sdf.parse(end);
@@ -92,6 +91,7 @@ public class RoomEndPoint {
 		System.out.println(q);
 		PreparedQuery pq = datastore.prepare(q);
 		List<Entity> creneaux = pq.asList(FetchOptions.Builder.withDefaults());
+		System.out.println(creneaux);
 		for (Entity creneau : creneaux) {
 			Date startEvent = new Date((long) creneau.getProperty("start")+ (2L * hoursInMillis));
 			creneau.setProperty("start", startEvent);
@@ -99,7 +99,7 @@ public class RoomEndPoint {
 			Date endEvent = new Date((long) creneau.getProperty("end")+ (2L * hoursInMillis));
 			creneau.setProperty("end", endEvent);
 		}
-				
+		System.out.println(creneaux);		
 		return creneaux;
 	}
 }
