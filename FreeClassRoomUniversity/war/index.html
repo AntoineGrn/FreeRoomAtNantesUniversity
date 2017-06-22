@@ -183,6 +183,10 @@
 					            	<input class="col-xs-5 form-control" required="required" type="number" name="capacite" min="1" max="30" ng-model="reservation.capaciteSalle" />
 				            	</div>
 				            	<div class="form-group col-xs-12">
+					            	<label class="col-xs-7">Commentaire :</label>
+					            	<textarea class="col-xs-12 form-control" size="10" required="required" name="desc" ng-model="reservation.desc" ></textarea>
+				            	</div>
+				            	<div class="form-group col-xs-12">
 				            		<input type="checkbox" ng-click="showAdresseMailOK = !showAdresseMailOK">
 				            		<span>Souhaitez-vous indiquez les adresses mails des personnes qui seront présentes ?</span>
 				            	</div>

@@ -49,20 +49,22 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	
 	// appel au web service pour ajouter un nouveau creneau de reserver pour une salle, une date, un creneau donné
 	this.scope.addResa = function(reservation) {
+		const data = {
+			userId: reservation.userId, 
+			start: reservation.start, 
+			end: reservation.end, 
+			salle: reservation.salle, 
+			mail: reservation.mail, 
+			nbPersonne: reservation.nbPersonne, 
+			desc: reservation.desc
+		};
 		_this.http(
-		{
-			method: 'POST',
-			url: 'https://1-dot-freeclassroomsuniversity.appspot.com/monapi/v1/monapi.roomEndPoint.setCreneau',
-			params: {
-				userId: reservation.user, 
-				start: reservation.start, 
-				end: reservation.end, 
-				salle: reservation.salle, 
-				mail: reservation.listeMails, 
-				nbPersonne: reservation.capacite, 
-				desc: reservation.description
-			}
-		}
+				{
+					method: 'POST',
+					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/post',
+					params: data,
+					headers: {'Content-Type': 'application/json'}
+				}
 		).then(function successCallback(response) {
 			console.log(response)
 		}, function errorCallback(response) {
@@ -98,27 +100,29 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 		_this.http(
 				{
 					method: 'GET',
-					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/get/null/' + recherche.roomSelected.name.split(".", 1),
+					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/get/test/' + recherche.roomSelected.name.split(".", 1),
 					headers : {'Accept' : 'application/json'}
 				}
 				).then(function successCallback(response) {
 					if (response.data) {
 						angular.forEach(response.data.items, function(item) {
-							_this.scope.listeEventsDatastore.push({
-								date: new Date(item.properties.start).getDay() + "/" + new Date(item.properties.start).getMonth() + "/" + new Date(item.properties.start).getYear(),
-								creneau: new Date(item.properties.start).getHours() + "h" + new Date(item.properties.start).getMinutes() + " - " + new Date(item.properties.end).getHours() + "h" + new Date(item.properties.end).getMinutes(),
-					            salle: item.properties.salle,
-					            title: "COURS"
-							});
-							_this.scope.events.push({
-					            start: item.properties.start,
-					            end: item.properties.end,
-					            title: "COURS",
-					            className: ['creneauOccupe']
-					        });
-							_this.scope.eventSources = [_this.scope.events];
+							if(new Date(item.properties.start).getUTCHours() !== 8 && new Date(item.properties.end).getUTCHours() !== 19) {
+								_this.scope.listeEventsDatastore.push({
+									date: new Date(item.properties.start).getDay() + "/" + new Date(item.properties.start).getMonth() + "/" + new Date(item.properties.start).getYear(),
+									creneau: new Date(item.properties.start).getHours() + "h" + new Date(item.properties.start).getMinutes() + " - " + new Date(item.properties.end).getHours() + "h" + new Date(item.properties.end).getMinutes(),
+						            salle: item.properties.salle,
+						            title: "COURS"
+								});
+								
+								_this.scope.events.push({
+						            start: item.properties.start,
+						            end: item.properties.end,
+						            title: "COURS",
+						            className: ['creneauOccupe']
+						        });
+								_this.scope.eventSources = [_this.scope.events];
+							}
 						});
-						//_this.scope.creneauxLibres = $scope.listeCreneauxUniversity;
 					}
 				}, function errorCallback(response) {
 					console.log("erreur inattendue");
@@ -150,36 +154,58 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
     	if (formIsValid) {
     		let dateHeureStart = null;
     		let dateHeureEnd = null;
-    		if (reservation.creneau.id === 1) {
-    			dateHeureStart = new Date(reservation.dateSelected).setHours(8, 0);
-        		dateHeureEnd = new Date(reservation.dateSelected).setHours(9,20);
-    		} else if (reservation.creneau.id === 2) {
-    			dateHeureStart = new Date(reservation.dateSelected).setHours(9, 30);
-        		dateHeureEnd = new Date(reservation.dateSelected).setHours(10,50);
-    		} else if (reservation.creneau.id === 3) {
-    			dateHeureStart = new Date(reservation.dateSelected).setHours(11, 0);
-        		dateHeureEnd = new Date(reservation.dateSelected).setHours(12,20);
-    		} else if (reservation.creneau.id === 4) {
-    			dateHeureStart = new Date(reservation.dateSelected).setHours(14, 0);
-        		dateHeureEnd = new Date(reservation.dateSelected).setHours(15,20);
-    		} else if (reservation.creneau.id === 5) {
-    			dateHeureStart = new Date(reservation.dateSelected).setHours(15, 30);
-        		dateHeureEnd = new Date(reservation.dateSelected).setHours(16,50);
-    		} else if (reservation.creneau.id === 6) {
-    			dateHeureStart = new Date(reservation.dateSelected).setHours(17, 0);
-        		dateHeureEnd = new Date(reservation.dateSelected).setHours(18,20);
+    		if (reservation.creneauSelected.id === 1) {
+    			dateHeureStart = new Date(reservation.dateSelected);
+    			dateHeureStart.setHours(8, 0);
+        		dateHeureEnd = new Date(reservation.dateSelected);
+        		dateHeureEnd.setHours(9,20);
+    		} else if (reservation.creneauSelected.id === 2) {
+    			dateHeureStart = new Date(reservation.dateSelected);
+    			dateHeureStart.setHours(9, 30);
+        		dateHeureEnd = new Date(reservation.dateSelected);
+        		dateHeureEnd.setHours(10,50);
+    		} else if (reservation.creneauSelected.id === 3) {
+    			dateHeureStart = new Date(reservation.dateSelected);
+    			dateHeureStart.setHours(11, 0);
+        		dateHeureEnd = new Date(reservation.dateSelected);
+        		dateHeureEnd.setHours(12,20);
+    		} else if (reservation.creneauSelected.id === 4) {
+    			dateHeureStart = new Date(reservation.dateSelected);
+    			dateHeureStart.setHours(14, 0);
+        		dateHeureEnd = new Date(reservation.dateSelected);
+        		dateHeureEnd.setHours(15,20);
+    		} else if (reservation.creneauSelected.id === 5) {
+    			dateHeureStart = new Date(reservation.dateSelected);
+    			dateHeureStart.setHours(15, 30);
+        		dateHeureEnd = new Date(reservation.dateSelected);
+        		dateHeureEnd.setHours(16,50);
+    		} else if (reservation.creneauSelected.id === 6) {
+    			dateHeureStart = new Date(reservation.dateSelected);
+    			dateHeureStart.setHours(17, 0);
+        		dateHeureEnd = new Date(reservation.dateSelected);
+        		dateHeureEnd.setHours(18,20);
     		}
     		
+    		let listeEmails = "";
+    		angular.forEach(reservation.email, function(value, key) {
+    			if (key == 0) {
+    				listeEmails = listeEmails + value + ";" ;
+    			} else {
+    				listeEmails = listeEmails + ";" + value;
+    			}
+    		});
+    		
     		const reservationStandard = {
-				userId: _this.scope.userId !== null ? _this.scope.userId : null, 
-				start: dateHeureStart, 
-				end: dateHeureEnd, 
-				salle: _this.scope.salleSelected.salle, 
-				mail: listeMails, 
-				nbPersonne: reservation.capacite, 
-				desc: ""
+				userId: _this.scope.userId !== null ? _this.scope.userId : "usertest", 
+				start: dateHeureStart.toISOString(), 
+				end: dateHeureEnd.toISOString(), 
+				salle: _this.scope.recherche.roomSelected.name, 
+				mail: listeEmails, 
+				nbPersonne: reservation.capaciteSalle, 
+				desc: reservation.desc
     		};
-    		_this.scope.events.push({
+    		_this.scope.addResa(reservationStandard);
+			_this.scope.events.push({
 	            start: dateHeureStart,
 	            end: dateHeureEnd,
 	            title: "RESERVED BY YOU",
@@ -205,7 +231,7 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	
 	// watch sur la salle selectionnee pour recharger le calendrier par la suite
 	this.scope.$watch("formulaireRechercheSalleDispo", function() {
-		if (_this.scope.recherche && _this.scope.reservation.roomSelected) {
+		if (_this.scope.recherche && _this.scope.recherche.roomSelected) {
 			_this.scope.hasFlash = true;
 			_this.scope.setFlash("info", "Vous avez selectionné une salle");
 		}		
@@ -227,19 +253,27 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 		if (_this.scope.reservation && _this.scope.reservation.dateSelected) {
 			const tmpListeCreneauxOccupes = _this.scope.events.filter(creneau => new Date(creneau.start).getDay() === _this.scope.reservation.dateSelected.getDay() && new Date(creneau.start).getMonth() === _this.scope.reservation.dateSelected.getMonth() && new Date(creneau.start).getYear() === _this.scope.reservation.dateSelected.getYear());
 			_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxUniversity;
+			
 			angular.forEach(tmpListeCreneauxOccupes, function(creneauOccupe) {
-				const heureDebut = new Date(creneauOccupe.start).getHours();
-				if (heureDebut => 8 && heureDebut < 10) {
+				const heureDebut = new Date(creneauOccupe.start).getUTCHours();
+				const heureFin = new Date(creneauOccupe.end).getUTCHours();
+				
+				if (heureDebut >= 8 && heureDebut < 10) {
 					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 1);
-				} else if (heureDebut => 9 && heureDebut < 11) {
+				}
+				if ((heureDebut >= 9 && heureDebut < 11) || (heureFin >= 9 && heureFin < 11) || (heureDebut <= 9 && heureFin >= 11)) {
 					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 2);
-				} else if (heureDebut => 11 && heureDebut < 13) {
+				} 
+				if ((heureDebut >= 11 && heureDebut < 13) || (heureFin >= 11 && heureFin < 13) || (heureDebut <= 11 && heureFin >= 13)) {
 					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 3);
-				} else if (heureDebut => 14 && heureDebut < 16) {
+				}
+				if ((heureDebut >= 14 && heureDebut < 16) || (heureFin >= 14 && heureFin < 16) || (heureDebut <= 14 && heureFin >= 16)) {
 					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 4);
-				} else if (heureDebut => 15 && heureDebut < 17) {
+				} 
+				if ((heureDebut >= 15 && heureDebut < 17) || (heureFin >= 15 && heureFin < 17) || (heureDebut <= 15 && heureFin >= 17)) {
 					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 5);
-				} else if (heureDebut => 17 && heureDebut < 19) {
+				}
+				if ((heureDebut >= 17 && heureDebut < 19) || (heureFin >= 17 && heureFin < 19) || (heureDebut <= 17 && heureFin >= 19)) {
 					_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxLibres.filter(creneau => creneau.id !== 6);
 				}
 			});
@@ -250,26 +284,6 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	this.scope.addNewInputEmail= function() {
 		_this.scope.listeEmails.push({email:""});
 	}
-	
-	/*var html;
-	this.scope.onSignIn = function(googleUser) {
-	  var profile = googleUser.getBasicProfile();
-	  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-	  console.log('Name: ' + profile.getName());
-	  console.log('Image URL: ' + profile.getImageUrl());
-	  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-	  html = $(".g-signin2").html();
-	  $(".g-signin2").html('<a href="#" ng-click="signOut()">Déconnexion</a>');
-	  _this.scope.userId = profile.getId();
-	}
-
-	this.scope.signOut = function() {
-	  var auth2 = gapi.auth2.getAuthInstance();
-	  auth2.signOut().then(function () {
-		  $(".g-signin2").html(html);
-		  _this.scope.user = null;
-	  });
-	}*/
 	
 	// init google maps ... pour eviter les erreurs en console
 	$scope.map = null;
