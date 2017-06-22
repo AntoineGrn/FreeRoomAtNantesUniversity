@@ -7,6 +7,7 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	this.scope.flash = null;
 	const _this = this;
 	this.scope.hasFlash = false;
+	this.scope.listeEmails = [{email:""}];
 	
 	// appel web service pour recuperer toutes les salles et formattage de la reponse
 	this.scope.getAllUniversityRoom = function() {
@@ -56,17 +57,6 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 		{id: 5,libelle: "15h30 - 16h50"},
 		{id: 5,libelle: "17h00 - 18h20"}
 	];
-	// evenements factice pour tester
-	$scope.events = [
-        {
-            title: 'Event1',
-            start: '2017-06-19'
-        },
-        {
-            title: 'Event2',
-            start: '2017-06-20'
-        }
-    ];
 	// définition des événements du calendrier
 	$scope.eventSources = [$scope.events];
 	
@@ -160,14 +150,24 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 			_this.scope.setFlash("info", "Vous avez selectionné une salle");
 		}		
 	});
+	
+	// watch sur le formulaire de reservation
+	this.scope.$watch("reservation", function() {
+		console.log(_this.scope.reservation);		
+	});
+	
 	// watch sur la date selectionnee pour ajouter une reservation
 	// filtrage sur les créneaux disponibles à cette date
-	this.scope.$watch("recherche.roomSelected", function() {
-		if (_this.scope.recherche.roomSelected) {
-			_this.scope.hasFlash = true;
-			_this.scope.setFlash("info", "Vous avez selectionné une salle");
+	this.scope.$watch("reservation.dateSelected", function() {
+		if (_this.scope.reservation.dateSelected) {
+			// TODO filtrage sur les créneaux disponibles à cette date
 		}		
 	});
+	
+	this.scope.addNewInputEmail= function() {
+		_this.scope.listeEmails.push({email:""});
+	}
+	
 	const html = "";
 	// méthode utilisée pour l'authentification par google
 	this.scope.onSignIn = function(googleUser) {

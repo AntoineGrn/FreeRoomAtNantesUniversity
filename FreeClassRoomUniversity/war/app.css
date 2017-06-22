@@ -31,6 +31,17 @@
 #pageTop .creneauLibre{
 	background-color: #91ff91;
 }
+#pageTop .iconAddEmailAdress{
+	font-size : 1.5em;
+}
+#pageTop .iconAddEmailAdress:hover{
+	cursor: pointer;
+}
+
+#pageTop .modal-title{
+	color: black;
+}
+
 #calendar{
 		width: 800px;
 		text-align: center;
