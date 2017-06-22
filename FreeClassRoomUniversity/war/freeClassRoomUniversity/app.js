@@ -14,7 +14,7 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 		_this.http(
 		{
 			method: 'GET',
-			url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/entitycollection'
+			url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/rooms/get'
 		}
 		).then(function successCallback(response) {
 			const result = response.data.items.map(function(item) {

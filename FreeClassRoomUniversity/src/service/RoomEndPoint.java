@@ -18,11 +18,13 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.search.DateUtil;
+import com.google.appengine.api.users.*;
 
 @Api(name = "monapi", version="v1")
 public class RoomEndPoint {
 	public DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	final long hoursInMillis = 60L * 60L * 1000L;
+	
 	@ApiMethod(
 	        path = "rooms/get",
 	        httpMethod = HttpMethod.GET
@@ -38,10 +40,10 @@ public class RoomEndPoint {
 		return rooms;
 	}
 	@ApiMethod(
-	        path = "creneaux/get/{start}/{end}",
+	        path = "creneaux/get/{userId}/{start}/{end}",
 	        httpMethod = HttpMethod.GET
 	    )
-	public List<Entity> getCreneaux (@Named("start") String start, @Named("end") String end) throws ParseException {
+	public List<Entity> getCreneaux (@Named("userId") String userId, @Named("start") String start, @Named("end") String end) throws ParseException {
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 		final Date startDate = sdf.parse(start);
 		final Date endDate = sdf.parse(end);
@@ -81,10 +83,10 @@ public class RoomEndPoint {
 	}
 	
 	@ApiMethod(
-	        path = "creneaux/get/{salle}",
+	        path = "creneaux/get/{userId}/{salle}",
 	        httpMethod = HttpMethod.GET
 	    )
-	public List<Entity> getCreneauxSalle(@Named("salle") String salle) throws ParseException {
+	public List<Entity> getCreneauxSalle(@Named("userId") String userId, @Named("salle") String salle) throws ParseException {
 		Filter roomFilter = new Query.FilterPredicate("salle", FilterOperator.EQUAL, salle);
 		Query q = new Query("Creneau").setFilter(roomFilter);
 		System.out.println(q);
@@ -97,8 +99,6 @@ public class RoomEndPoint {
 			Date endEvent = new Date((long) creneau.getProperty("end")+ (2L * hoursInMillis));
 			creneau.setProperty("end", endEvent);
 		}
-		
-		System.out.println(creneaux);
 				
 		return creneaux;
 	}

@@ -41,7 +41,7 @@
       }
     },
     "monapi.roomEndPoint.getCreneaux" : {
-      "path" : "creneaux/get/{start}/{end}",
+      "path" : "creneaux/get/{userId}/{start}/{end}",
       "httpMethod" : "GET",
       "authLevel" : "NONE",
       "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
@@ -50,6 +50,10 @@
       "rosyMethod" : "service.RoomEndPoint.getCreneaux",
       "request" : {
         "parameters" : {
+          "userId" : {
+            "type" : "string",
+            "required" : true
+          },
           "start" : {
             "type" : "string",
             "required" : true
@@ -111,7 +115,7 @@
       }
     },
     "monapi.roomEndPoint.getCreneauxSalle" : {
-      "path" : "creneaux/get/{salle}",
+      "path" : "creneaux/get/{userId}/{salle}",
       "httpMethod" : "GET",
       "authLevel" : "NONE",
       "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
@@ -120,6 +124,10 @@
       "rosyMethod" : "service.RoomEndPoint.getCreneauxSalle",
       "request" : {
         "parameters" : {
+          "userId" : {
+            "type" : "string",
+            "required" : true
+          },
           "salle" : {
             "type" : "string",
             "required" : true
@@ -144,17 +152,17 @@
           "parent" : {
             "$ref" : "Key"
           },
-          "appId" : {
-            "type" : "string"
-          },
-          "propertiesFrom" : {
-            "$ref" : "Entity"
-          },
           "kind" : {
             "type" : "string"
           },
           "namespace" : {
             "type" : "string"
+          },
+          "appId" : {
+            "type" : "string"
+          },
+          "propertiesFrom" : {
+            "$ref" : "Entity"
           },
           "properties" : {
             "$ref" : "JsonMap"
