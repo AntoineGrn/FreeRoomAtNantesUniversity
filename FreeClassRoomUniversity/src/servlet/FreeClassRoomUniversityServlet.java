@@ -6,8 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import javax.servlet.http.*;
@@ -40,26 +42,34 @@ public class FreeClassRoomUniversityServlet extends HttpServlet {
 				String line = reader.readLine();
 				final long hoursInMillis = 60L * 60L * 1000L;
 				final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+				DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+				sdf.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
 				Date today = new Date();
-				Date start = null, end = null;
+				Date start = null;
+				Date end = null;
 				while (!line.contains("END:VCALENDAR")){
 					if (line.contains("BEGIN:VEVENT")) {
 						while (!line.contains("END:VEVENT")) {
 							if (line.contains("DTSTART")){
 								String dateCalUTC = line.split(":")[1];
-								final java.util.Date dateCal = sdf.parse(dateCalUTC);
-								Date dateObj = new Date(dateCal.getTime() + (2L * hoursInMillis));
-								sdf.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));   // This line converts the given date into UTC time zone
-								//String aRevisedDate = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss").format(dateObj);	
-								start = dateObj;
+								Date dateCal = sdf.parse(dateCalUTC);
+								Calendar cal = Calendar.getInstance();
+								cal.setTime(dateCal);
+								cal.add(Calendar.HOUR_OF_DAY,+2); // this will add two hours
+								dateCal = cal.getTime();
+								String dateDebutCreneau = df.format(dateCal);	
+								start = dateCal;
 							}
 
 							if (line.contains("DTEND")){
-								String dateCalUTC = line.split(":")[1];
-								final java.util.Date dateCal = sdf.parse(dateCalUTC);
-								Date dateObj = new Date(dateCal.getTime() + (2L * hoursInMillis));
-								sdf.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));   // This line converts the given date into UTC time zone	
-								end = dateObj;
+								String dateCalUTCFin = line.split(":")[1];
+								Date dateCalFin = sdf.parse(dateCalUTCFin);
+								Calendar cal = Calendar.getInstance();
+								cal.setTime(dateCalFin);
+								cal.add(Calendar.HOUR_OF_DAY,+2); // this will add two hours
+								dateCalFin = cal.getTime();
+								String dateFinCreneau = df.format(dateCalFin);	
+								end = dateCalFin;
 							}
 							
 							if (start != null && end != null) {
@@ -69,11 +79,11 @@ public class FreeClassRoomUniversityServlet extends HttpServlet {
 									creneau.setProperty("end", end.getTime());
 									creneau.setProperty("salle", room.replace(".html", ""));
 						    		datastore.put(creneau);
-									System.out.println("Salle : " + room + " Heure de début : "+ start.getTime() + " Heure de fin" + end.getTime());
+									System.out.println("Salle : " + room + " Heure de début : "+ start + " Heure de fin" + end);
 									start = null;
-									end = null;
 								}
 							}
+							end = null;
 						line = reader.readLine();
 						}
 					}
