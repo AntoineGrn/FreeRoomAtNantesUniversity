@@ -23,7 +23,10 @@ import com.google.appengine.api.search.DateUtil;
 public class RoomEndPoint {
 	public DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	final long hoursInMillis = 60L * 60L * 1000L;
-	
+	@ApiMethod(
+	        path = "rooms/get",
+	        httpMethod = HttpMethod.GET
+	    )
 	public List<Entity> getRooms () {
 		Query q = new Query("Room");
 		List<Entity> rooms = datastore.prepare(q).asList(FetchOptions.Builder.withDefaults());
