@@ -102,4 +102,26 @@ public class RoomEndPoint {
 		System.out.println(creneaux);		
 		return creneaux;
 	}
+	
+	@ApiMethod(
+	        path = "reservations/get/{mail}",
+	        httpMethod = HttpMethod.GET
+	    )
+	public List<Entity> getReservationByUser(@Named("mail") String mail) throws ParseException {
+		Filter resaFilter = new Query.FilterPredicate("mail", FilterOperator.EQUAL, mail);
+		Query q = new Query("Reservation").setFilter(resaFilter);
+		System.out.println(q);
+		PreparedQuery pq = datastore.prepare(q);
+		List<Entity> reservations = pq.asList(FetchOptions.Builder.withDefaults());
+		System.out.println(reservations);
+		for (Entity reservation : reservations) {
+			Date startEvent = new Date((long) reservation.getProperty("start")+ (2L * hoursInMillis));
+			reservation.setProperty("start", startEvent);
+			
+			Date endEvent = new Date((long) reservation.getProperty("end")+ (2L * hoursInMillis));
+			reservation.setProperty("end", endEvent);
+		}
+		System.out.println(reservations);		
+		return reservations;
+	}
 }
