@@ -61,7 +61,7 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 		_this.http(
 				{
 					method: 'POST',
-					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/post',
+					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/post/setCreneau',
 					params: data,
 					headers: {'Content-Type': 'application/json'}
 				}
