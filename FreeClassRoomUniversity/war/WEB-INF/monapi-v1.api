@@ -95,7 +95,7 @@
       }
     },
     "monapi.roomEndPoint.getReservationByUser" : {
-      "path" : "reservations/get/{mail}",
+      "path" : "reservations/get/{userId}",
       "httpMethod" : "GET",
       "authLevel" : "NONE",
       "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
@@ -104,7 +104,7 @@
       "rosyMethod" : "service.RoomEndPoint.getReservationByUser",
       "request" : {
         "parameters" : {
-          "mail" : {
+          "userId" : {
             "type" : "string",
             "required" : true
           }
@@ -158,6 +158,31 @@
       },
       "response" : {
         "body" : "empty"
+      }
+    },
+    "monapi.roomEndPoint.getReservationBySalle" : {
+      "path" : "reservations/get/{userId}/{salle}",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "service.RoomEndPoint.getReservationBySalle",
+      "request" : {
+        "parameters" : {
+          "userId" : {
+            "type" : "string",
+            "required" : true
+          },
+          "salle" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
       }
     }
   },
@@ -257,6 +282,11 @@
         }
       },
       "service.RoomEndPoint.setCreneau" : {
+      },
+      "service.RoomEndPoint.getReservationBySalle" : {
+        "response" : {
+          "$ref" : "EntityCollection"
+        }
       }
     }
   }

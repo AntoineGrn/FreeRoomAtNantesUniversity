@@ -27,7 +27,6 @@
   "dependencies": {
     "angular": "^1.6.4",
     "angular-bootstrap-calendar": "^0.29.2",
-    "angular-google-gapi": "^1.0.1",
     "angular-route": "^1.6.4",
     "angular-ui-bootstrap": "^2.5.0",
     "angular-ui-calendar": "^1.0.2",
