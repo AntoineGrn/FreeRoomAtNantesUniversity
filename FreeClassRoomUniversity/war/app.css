@@ -2,8 +2,9 @@
 #pageTop .divMessageFlash{
 	width: 20em;
 	right:0;
-	position: fixed;
-	z-index: 1000000000;
+	float: right;
+	position: absolute;
+	z-index: 100000000;
 }
 
 #pageTop .containerFormReservation {
@@ -31,6 +32,11 @@
 #pageTop .creneauLibre{
 	background-color: #91ff91;
 }
+
+#pageTop .creneauOccupeReserve{
+	background-color: #ff8000;
+}
+
 #pageTop .iconAddEmailAdress{
 	font-size : 1.5em;
 }

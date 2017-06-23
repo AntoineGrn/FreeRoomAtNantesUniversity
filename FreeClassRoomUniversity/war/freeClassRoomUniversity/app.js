@@ -1,6 +1,6 @@
 const app = angular.module('freeClassRoomApp', ['ui.calendar', 'ui.bootstrap'])
 
-const ClassRoomCtrl = function($scope, $rootScope, $http) {
+const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig) {
 	// init variables
 	this.scope = $scope;
 	this.http = $http;
@@ -12,6 +12,7 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	this.scope.listeEventsDatastore = [];
 	this.scope.reservation = {};
 	this.scope.userId = null;
+	this.scope.connexionOk= false;
 	
 	// liste de tous les créneaux en dur car ne change pas (à filtrer suivant ceux déjà pris)
 	$scope.listeCreneauxUniversity = [
@@ -66,7 +67,9 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 					headers: {'Content-Type': 'application/json'}
 				}
 		).then(function successCallback(response) {
-			console.log(response)
+			angular.element("#AddResaModale").modal('hide');
+			_this.scope.reservation = null;
+			console.log(response);
 		}, function errorCallback(response) {
 			console.log("erreur inattendue");
 		});
@@ -93,14 +96,87 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
       }
     };
     
+    // appel au service REST pour recuperer les reservations effectuées par l'utilisateur
+    // ajouter la liste au calendrier
+    this.scope.rechercherReservationByUser = function(recherche) {
+    	_this.scope.verifUserConnected();
+    	const userId = _this.scope.userId;
+    	_this.http(
+				{
+					method: 'GET',
+					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/reservations/get/' + userId,
+					headers : {'Accept' : 'application/json'}
+				}
+				).then(function successCallback(response) {
+					if (response.data) {
+						angular.forEach(response.data.items, function(item) {
+							if(new Date(item.properties.start).getUTCHours() !== 8 && new Date(item.properties.end).getUTCHours() !== 19) {
+								_this.scope.listeEventsDatastore.push({
+									date: new Date(item.properties.start).getDay() + "/" + new Date(item.properties.start).getMonth() + "/" + new Date(item.properties.start).getYear(),
+									creneau: new Date(item.properties.start).getHours() + "h" + new Date(item.properties.start).getMinutes() + " - " + new Date(item.properties.end).getHours() + "h" + new Date(item.properties.end).getMinutes(),
+						            salle: item.properties.salle,
+						            title: "RESERVED BY STUDENT" 
+								});
+								
+								_this.scope.events.push({
+						            start: item.properties.start,
+						            end: item.properties.end,
+						            title: "RESERVED BY STUDENT",
+						            className: ['creneauReserve']
+						        });
+							}
+						});
+					}
+				}, function errorCallback(response) {
+					console.log("erreur inattendue");
+				});
+    }
+    
+    // appel au service REST pour recuperer les reservations effectuées par salle
+    // ajouter la liste au calendrier
+    this.scope.rechercherReservationBySalle = function(recherche) {
+    	_this.scope.verifUserConnected();
+    	const userId = _this.scope.userId;
+    	_this.http(
+				{
+					method: 'GET',
+					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/reservations/get/' + userId + "/" + recherche.roomSelected.name,
+					headers : {'Accept' : 'application/json'}
+				}
+				).then(function successCallback(response) {
+					if (response.data) {
+						angular.forEach(response.data.items, function(item) {
+							if(new Date(item.properties.start).getUTCHours() !== 8 && new Date(item.properties.end).getUTCHours() !== 19) {
+								_this.scope.listeEventsDatastore.push({
+									date: new Date(item.properties.start).getDay() + "/" + new Date(item.properties.start).getMonth() + "/" + new Date(item.properties.start).getYear(),
+									creneau: new Date(item.properties.start).getHours() + "h" + new Date(item.properties.start).getMinutes() + " - " + new Date(item.properties.end).getHours() + "h" + new Date(item.properties.end).getMinutes(),
+						            salle: item.properties.salle,
+						            title: "RESERVED BY STUDENT" 
+								});
+								
+								_this.scope.events.push({
+						            start: item.properties.start,
+						            end: item.properties.end,
+						            title: "RESERVED BY STUDENT",
+						            className: ['creneauReserve']
+						        });
+							}
+						});
+					}
+				}, function errorCallback(response) {
+					console.log("erreur inattendue");
+				});
+    }
+    
     // appel au service REST pour recuperer les créneaux de la salle selectionnee 
     // ajouter la liste des creneaux au calendier
     this.scope.rechercherDisponibilites = function(recherche) {
 		_this.scope.nomSalleSelected = recherche.roomSelected.libelle;
+		_this.scope.verifUserConnected();
 		_this.http(
 				{
 					method: 'GET',
-					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/get/test/' + recherche.roomSelected.name.split(".", 1),
+					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/get/'+ _this.scope.userId +'/' + recherche.roomSelected.name.split(".", 1),
 					headers : {'Accept' : 'application/json'}
 				}
 				).then(function successCallback(response) {
@@ -120,7 +196,6 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 						            title: "COURS",
 						            className: ['creneauOccupe']
 						        });
-								_this.scope.eventSources = [_this.scope.events];
 							}
 						});
 					}
@@ -141,11 +216,15 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
         });
     	$scope.eventSources = [$scope.events];
     }
+    
     // verification validite formulaire de recherche de salle + creneaux
     // puis appel à la méthode de chargement des créneaux de la salle selectionnee
     this.scope.submitForm = function(formIsValid, recherche){
     	if (formIsValid) {
+    		uiCalendarConfig.calendars['calendar'].fullCalendar('removeEvents');
+    		_this.scope.verfiConnexionUser();
     		_this.scope.rechercherDisponibilites(recherche);
+    		_this.scope.rechercherReservationBySalle(recherche);
     		_this.scope.roomSelected = recherche.roomSelected;
     	}
     }
@@ -194,9 +273,9 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
     				listeEmails = listeEmails + ";" + value;
     			}
     		});
-    		
+    		_this.scope.verifUserConnected();
     		const reservationStandard = {
-				userId: _this.scope.userId !== null ? _this.scope.userId : "usertest", 
+				userId: _this.scope.userId, 
 				start: dateHeureStart.toISOString(), 
 				end: dateHeureEnd.toISOString(), 
 				salle: _this.scope.recherche.roomSelected.name, 
@@ -208,7 +287,7 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 			_this.scope.events.push({
 	            start: dateHeureStart,
 	            end: dateHeureEnd,
-	            title: "RESERVED BY YOU",
+	            title: reservation.title,
 	            className: ['creneauReserve']
 	        });
 			_this.scope.eventSources = [_this.scope.events];
@@ -217,6 +296,7 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
     
 	// definition de la methode flash pour les notifications 
 	this.scope.setFlash = function($type, $message) {
+		_this.scope.hasFlash = true;
 	    _this.scope.flash = {type: $type, message: $message};
 	    setTimeout(function () {
 	        angular.element('.flash-removable').addClass('fade');
@@ -225,8 +305,8 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 	                _this.scope.flash = null;
 	                _this.scope.hasFlash = false;
 	            });
-	        }, 2000);
-	    }, 2000);
+	        }, 3000);
+	    }, 3000);
 	}
 	
 	// watch sur la salle selectionnee pour recharger le calendrier par la suite
@@ -242,10 +322,32 @@ const ClassRoomCtrl = function($scope, $rootScope, $http) {
 		console.log(_this.scope.reservation);		
 	});
 	
+	this.scope.verfiConnexionUser = function() {
+		_this.scope.verifUserConnected();
+		if (document.getElementById("#userId") !== null && angular.element(document.getElementById("#userId").value) !== undefined) {
+			_this.scope.userId = angular.element(document.getElementById("#userId").value).selector;
+		} else {
+			_this.scope.setFlash("info", "Veuillez vous connectez pour effectuer des réservations");
+		}
+		if (_this.scope.userId !== null && _this.scope.userId !== undefined) {
+			_this.scope.connexionOk = true;
+		}
+	}
+	
 	this.scope.verifUserConnected = function() {
-		_this.scope.userId = $("#userId").html();
+		if (document.getElementById("#userId") !== null && angular.element(document.getElementById("#userId").value) !== undefined) {
+			_this.scope.userId = angular.element(document.getElementById("#userId").value).selector;
+		} else {
+			_this.scope.setFlash("info", "Veuillez vous connectez pour effectuer des réservations");
+		}
 	}
 
+	// watch sur la checkbox de saisie des emails pour la resa
+	this.scope.$watch("showAdresseMailOk", function() {
+		if (!_this.scope.showAdresseMailOk) {
+			_this.scope.reservation.email = [];
+		}		
+	});
 	
 	// watch sur la date selectionnee pour ajouter une reservation
 	// filtrage sur les créneaux disponibles à cette date

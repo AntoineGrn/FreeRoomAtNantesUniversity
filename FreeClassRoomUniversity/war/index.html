@@ -122,7 +122,7 @@
 			    <button type="button" class="close" data-dismiss="alert">×</button>
 			    {{ flash.message }}
 			</div>
-			<!-- ng-if="userId !== null && userId !== undefined" -->
+			<!-- ng-if="verfiConnexionOk !== null && verfiConnexionOk !== undefined" -->
 			<div >
 		    	<section id="reservation" class="containerFormReservation container content-section text-center">
 			        <div class="row">
@@ -144,11 +144,11 @@
 			                <h2>Calendrier salle {{recherche.roomSelected.libelle}}</h2>
 			                <span>
 			                <!-- TODO a rajouter sur le bouton : ng-disabled="roomSelected === undefined" -->
-			                	<button  type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddResaModale">
+			                	<button  ng-if="connexionOk" ng-disabled="recherche.roomSelected === null || recherche.roomSelected === undefined" type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddResaModale">
 	                            	Ajouter un événement
 	                        	</button>
 			                </span>
-			              	<div class="calendarUniversity" ui-calendar="uiConfig.calendar" ng-model="eventSources"></div>
+			              	<div class="calendarUniversity" calendar="calendar" ui-calendar="uiConfig.calendar" ng-model="eventSources"></div>
 			            </div>
 			        </div>
 			    </section>
@@ -209,7 +209,19 @@
 		    <!-- Footer -->
 		    <footer>
 		        <div class="container text-center">
-		            <p>Copyright &copy; FreeClassRoomUniversity</p>
+		        	<div class="row">
+		        		<div class="col-xs-4">
+		        			<a href="https://github.com/AntoineGrn/FreeRoomAtNantesUniversity">Lien vers le Github</a>
+		        		</div>
+		        		<div class="col-xs-4">
+		        			<p>Copyright &copy; FreeClassRoomUniversity</p>
+		        		</div>
+		        		<div class="col-xs-4">
+		        			<a href="https://apis-explorer.appspot.com/apis-explorer/?base=https%3A%2F%2F1-dot-freeclassroomsuniversity.appspot.com%2F_ah%2Fapi#p/monapi/v1/">
+		        				Lien vers l'API
+		        			</a> 
+		        		</div>
+		        	</div>
 		        </div>
 		    </footer>
 			
