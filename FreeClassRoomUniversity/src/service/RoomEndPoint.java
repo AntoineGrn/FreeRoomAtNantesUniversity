@@ -78,6 +78,7 @@ public class RoomEndPoint {
 		resa.setProperty("mail", mail);
 		resa.setProperty("nbPersonne", nbPersonne);
 		resa.setProperty("description", desc);
+		resa.setProperty("userID", userId);
 		datastore.put(resa);
 	}
 	
@@ -88,7 +89,6 @@ public class RoomEndPoint {
 	public List<Entity> getCreneauxSalle(@Named("userId") String userId, @Named("salle") String salle) throws ParseException {
 		Filter roomFilter = new Query.FilterPredicate("salle", FilterOperator.EQUAL, salle);
 		Query q = new Query("Creneau").setFilter(roomFilter);
-		System.out.println(q);
 		PreparedQuery pq = datastore.prepare(q);
 		List<Entity> creneaux = pq.asList(FetchOptions.Builder.withDefaults());
 		System.out.println(creneaux);
@@ -101,5 +101,47 @@ public class RoomEndPoint {
 		}
 		System.out.println(creneaux);		
 		return creneaux;
+	}
+	
+	@ApiMethod(
+	        path = "reservations/get/{userId}",
+	        httpMethod = HttpMethod.GET
+	    )
+	public List<Entity> getReservationByUser(@Named("userId") String userId) throws ParseException {
+		Filter resaFilter = new Query.FilterPredicate("userID", FilterOperator.EQUAL, userId);
+		Query q = new Query("Reservation").setFilter(resaFilter);
+		PreparedQuery pq = datastore.prepare(q);
+		List<Entity> reservations = pq.asList(FetchOptions.Builder.withDefaults());
+		System.out.println(reservations);
+		for (Entity reservation : reservations) {
+			Date startEvent = new Date((long) reservation.getProperty("start")+ (2L * hoursInMillis));
+			reservation.setProperty("start", startEvent);
+			
+			Date endEvent = new Date((long) reservation.getProperty("end")+ (2L * hoursInMillis));
+			reservation.setProperty("end", endEvent);
+		}
+		System.out.println(reservations);		
+		return reservations;
+	}
+	
+	@ApiMethod(
+	        path = "reservations/get/{userId}/{salle}",
+	        httpMethod = HttpMethod.GET
+	    )
+	public List<Entity> getReservationBySalle(@Named("userId") String userId, @Named("salle") String salle) throws ParseException {
+		Filter resaFilter = new Query.FilterPredicate("salle", FilterOperator.EQUAL, salle);
+		Query q = new Query("Reservation").setFilter(resaFilter);
+		PreparedQuery pq = datastore.prepare(q);
+		List<Entity> reservations = pq.asList(FetchOptions.Builder.withDefaults());
+		System.out.println(reservations);
+		for (Entity reservation : reservations) {
+			Date startEvent = new Date((long) reservation.getProperty("start")+ (2L * hoursInMillis));
+			reservation.setProperty("start", startEvent);
+			
+			Date endEvent = new Date((long) reservation.getProperty("end")+ (2L * hoursInMillis));
+			reservation.setProperty("end", endEvent);
+		}
+		System.out.println(reservations);		
+		return reservations;
 	}
 }
