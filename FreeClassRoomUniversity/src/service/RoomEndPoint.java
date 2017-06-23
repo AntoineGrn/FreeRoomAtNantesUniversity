@@ -64,7 +64,7 @@ public class RoomEndPoint {
 	}
 	
 	@ApiMethod(
-	        path = "creneaux/post",
+	        path = "creneaux/post/setCreneau",
 	        httpMethod = HttpMethod.POST
 	    )
 	public void setCreneau(@Named("userId") String userId, @Named("start") String start, @Named("end") String end, @Named("salle") String salle, @Named("mail") String mail, @Named("nbPersonne") String nbPersonne, @Named("desc") String desc) throws ParseException {
@@ -77,7 +77,7 @@ public class RoomEndPoint {
 		resa.setProperty("salle", salle);
 		resa.setProperty("mail", mail);
 		resa.setProperty("nbPersonne", nbPersonne);
-		resa.setProperty("descritpion", desc);
+		resa.setProperty("description", desc);
 		datastore.put(resa);
 	}
 	

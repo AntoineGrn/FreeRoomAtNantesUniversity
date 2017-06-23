@@ -7,7 +7,7 @@ function onSignIn(googleUser) {
   console.log('Image URL: ' + profile.getImageUrl());
   console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
   html = $(".g-signin2").html();
-  $(".g-signin2").html('<a href="#" onclick="signOut();">Déconnexion</a>');
+  $(".g-signin2").html('<a href="#" onclick="signOut();">Déconnexion</a><input id="#userId" type="hidden" value=' + profile.getId() + ' />');
 }
 
 function signOut() {
