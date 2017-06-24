@@ -8,6 +8,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
@@ -67,7 +68,7 @@ public class RoomEndPoint {
 	        path = "creneaux/post/setCreneau",
 	        httpMethod = HttpMethod.POST
 	    )
-	public void setCreneau(@Named("userId") String userId, @Named("start") String start, @Named("end") String end, @Named("salle") String salle, @Named("mail") String mail, @Named("nbPersonne") String nbPersonne, @Named("desc") String desc) throws ParseException {
+	public void setCreneau(@Named("userId") String userId, @Named("start") String start, @Named("end") String end, @Named("salle") String salle, @Named("mail") @Nullable String mail, @Named("nbPersonne") String nbPersonne, @Named("desc") @Nullable String desc) throws ParseException {
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 		final Date startDate = sdf.parse(start);
 		final Date endDate = sdf.parse(end);
