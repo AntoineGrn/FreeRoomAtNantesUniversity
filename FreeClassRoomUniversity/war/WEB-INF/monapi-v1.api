@@ -69,6 +69,51 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "monapi.roomEndPoint.setCreneau" : {
+      "path" : "creneaux/post/setCreneau",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "service.RoomEndPoint.setCreneau",
+      "request" : {
+        "parameters" : {
+          "userId" : {
+            "type" : "string",
+            "required" : true
+          },
+          "start" : {
+            "type" : "string",
+            "required" : true
+          },
+          "end" : {
+            "type" : "string",
+            "required" : true
+          },
+          "salle" : {
+            "type" : "string",
+            "required" : true
+          },
+          "mail" : {
+            "type" : "string",
+            "required" : false
+          },
+          "nbPersonne" : {
+            "type" : "string",
+            "required" : true
+          },
+          "desc" : {
+            "type" : "string",
+            "required" : false
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
     "monapi.roomEndPoint.getCreneauxSalle" : {
       "path" : "creneaux/get/{userId}/{salle}",
       "httpMethod" : "GET",
@@ -115,51 +160,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "monapi.roomEndPoint.setCreneau" : {
-      "path" : "creneaux/post/setCreneau",
-      "httpMethod" : "POST",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "service.RoomEndPoint.setCreneau",
-      "request" : {
-        "parameters" : {
-          "userId" : {
-            "type" : "string",
-            "required" : true
-          },
-          "start" : {
-            "type" : "string",
-            "required" : true
-          },
-          "end" : {
-            "type" : "string",
-            "required" : true
-          },
-          "salle" : {
-            "type" : "string",
-            "required" : true
-          },
-          "mail" : {
-            "type" : "string",
-            "required" : true
-          },
-          "nbPersonne" : {
-            "type" : "string",
-            "required" : true
-          },
-          "desc" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
-      }
-    },
     "monapi.roomEndPoint.getReservationBySalle" : {
       "path" : "reservations/get/{userId}/{salle}",
       "httpMethod" : "GET",
@@ -198,16 +198,16 @@
           "parent" : {
             "$ref" : "Key"
           },
-          "propertiesFrom" : {
-            "$ref" : "Entity"
-          },
           "kind" : {
             "type" : "string"
           },
-          "appId" : {
+          "namespace" : {
             "type" : "string"
           },
-          "namespace" : {
+          "propertiesFrom" : {
+            "$ref" : "Entity"
+          },
+          "appId" : {
             "type" : "string"
           },
           "properties" : {
@@ -235,11 +235,11 @@
           "parent" : {
             "$ref" : "Key"
           },
-          "complete" : {
-            "type" : "boolean"
-          },
           "namespace" : {
             "type" : "string"
+          },
+          "complete" : {
+            "type" : "boolean"
           }
         }
       },
@@ -271,6 +271,8 @@
           "$ref" : "EntityCollection"
         }
       },
+      "service.RoomEndPoint.setCreneau" : {
+      },
       "service.RoomEndPoint.getCreneauxSalle" : {
         "response" : {
           "$ref" : "EntityCollection"
@@ -280,8 +282,6 @@
         "response" : {
           "$ref" : "EntityCollection"
         }
-      },
-      "service.RoomEndPoint.setCreneau" : {
       },
       "service.RoomEndPoint.getReservationBySalle" : {
         "response" : {
