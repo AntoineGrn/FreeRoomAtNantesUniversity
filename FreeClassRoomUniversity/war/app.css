@@ -3,7 +3,7 @@
 	width: 20em;
 	right:0;
 	float: right;
-	position: absolute;
+	position: relative;
 	z-index: 100000000;
 }
 
@@ -46,6 +46,19 @@
 
 #pageTop .modal-title{
 	color: black;
+}
+
+#DetailCreneauModale {
+	color: black;
+}
+
+#DetailCreneauModale .evenementValue{
+	font-size: 14px;
+}
+
+#DetailCreneauModale .evenementValueTitle{
+	font-weight: bold;
+	color: #515151;
 }
 
 #calendar{

@@ -1,9 +1,10 @@
 const app = angular.module('freeClassRoomApp', ['ui.calendar', 'ui.bootstrap'])
 
-const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig) {
+const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig, $compile) {
 	// init variables
 	this.scope = $scope;
 	this.http = $http;
+	this.compile = $compile;
 	this.scope.flash = null;
 	const _this = this;
 	this.scope.hasFlash = false;
@@ -68,8 +69,8 @@ const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig) {
 				}
 		).then(function successCallback(response) {
 			angular.element("#AddResaModale").modal('hide');
+			_this.scope.setFlash("info", "Votre réservation s'est effectuée avec succès");
 			_this.scope.reservation = null;
-			console.log(response);
 		}, function errorCallback(response) {
 			console.log("erreur inattendue");
 		});
@@ -77,6 +78,26 @@ const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig) {
 
 	// définition des événements du calendrier
 	$scope.eventSources = [$scope.events];
+	
+	/* evenement click sur une reservation */
+    _this.scope.alertOnEventClick = function( date, jsEvent, view){
+    	_this.scope.setFlash("info", "Vous avez cliqué sur une réservation");
+    	const dateDebutStandard = new Date(date.start);
+    	const dateFinStandard = new Date(date.end);
+    	const minutesDebutStandard = dateDebutStandard.getUTCMinutes() === 0 ? "" : dateDebutStandard.getUTCMinutes();
+    	
+    	const dateStandardisee = dateDebutStandard.getUTCDate() + "/" + (dateDebutStandard.getUTCMonth() + 1) + "/" + dateDebutStandard.getUTCFullYear();
+    	const creneauStandardise = dateDebutStandard.getUTCHours() + "h" + minutesDebutStandard + " - " + dateFinStandard.getUTCHours() + "h" + dateFinStandard.getUTCMinutes();
+    	_this.scope.event = _this.scope.listeEventsDatastore.filter(resa => resa.date === dateStandardisee && resa.creneau === creneauStandardise)[0];
+    	angular.element("#DetailCreneauModale").modal('show');
+    };
+	
+	/* Tooltip au survol des reservations */
+    this.scope.eventRender = function( event, element, view ) { 
+        element.attr({'tooltip': event.title,
+                     'tooltip-append-to-body': true});
+        _this.compile(element)(_this.scope);
+    };
 	
 	/* config calendar */
     $scope.uiConfig = {
@@ -89,6 +110,8 @@ const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig) {
           center: 'title',
           right: 'today prev,next'
         },
+        eventRender: _this.scope.eventRender,
+        eventClick: _this.scope.alertOnEventClick,
         dayNames: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
         dayNamesShort: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"], 
         monthNames: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"],
@@ -111,17 +134,22 @@ const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig) {
 					if (response.data) {
 						angular.forEach(response.data.items, function(item) {
 							if(new Date(item.properties.start).getUTCHours() !== 8 && new Date(item.properties.end).getUTCHours() !== 19) {
+								const minutesDebutStandard = new Date(item.properties.start).getUTCMinutes() === 0 ? "" : new Date(item.properties.start).getUTCMinutes();
+								const nomSalle = _this.scope.listeRoomUniversity.filter(room => room.name === item.properties.salle);
 								_this.scope.listeEventsDatastore.push({
-									date: new Date(item.properties.start).getDay() + "/" + new Date(item.properties.start).getMonth() + "/" + new Date(item.properties.start).getYear(),
-									creneau: new Date(item.properties.start).getHours() + "h" + new Date(item.properties.start).getMinutes() + " - " + new Date(item.properties.end).getHours() + "h" + new Date(item.properties.end).getMinutes(),
-						            salle: item.properties.salle,
-						            title: "RESERVED BY STUDENT" 
+									date: new Date(item.properties.start).getUTCDate() + "/" + (new Date(item.properties.start).getUTCMonth() + 1) + "/" + new Date(item.properties.start).getUTCFullYear(),
+									creneau: new Date(item.properties.start).getUTCHours() + "h" + minutesDebutStandard + " - " + new Date(item.properties.end).getUTCHours() + "h" + new Date(item.properties.end).getUTCMinutes(),
+						            salle: nomSalle,
+						            title: item.properties.userId === _this.scope.userId ? "RESERVED BY YOU" : "RESERVED BY STUDENT",
+						            nbPersonne: item.properties.nbPersonne, 
+						            mail: listeEmails,
+						            description: item.properties.desc
 								});
 								
 								_this.scope.events.push({
 						            start: item.properties.start,
 						            end: item.properties.end,
-						            title: "RESERVED BY STUDENT",
+						            title: item.properties.userId === _this.scope.userId ? "RESERVED BY YOU" : "RESERVED BY STUDENT",
 						            className: ['creneauReserve']
 						        });
 							}
@@ -147,11 +175,16 @@ const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig) {
 					if (response.data) {
 						angular.forEach(response.data.items, function(item) {
 							if(new Date(item.properties.start).getUTCHours() !== 8 && new Date(item.properties.end).getUTCHours() !== 19) {
+								const minutesDebutStandard = new Date(item.properties.start).getUTCMinutes() === 0 ? "" : new Date(item.properties.start).getUTCMinutes();
+								const nomSalle = _this.scope.listeRoomUniversity.filter(room => room.name === item.properties.salle);
 								_this.scope.listeEventsDatastore.push({
-									date: new Date(item.properties.start).getDay() + "/" + new Date(item.properties.start).getMonth() + "/" + new Date(item.properties.start).getYear(),
-									creneau: new Date(item.properties.start).getHours() + "h" + new Date(item.properties.start).getMinutes() + " - " + new Date(item.properties.end).getHours() + "h" + new Date(item.properties.end).getMinutes(),
-						            salle: item.properties.salle,
-						            title: "RESERVED BY STUDENT" 
+									date: new Date(item.properties.start).getUTCDate() + "/" + (new Date(item.properties.start).getUTCMonth() + 1) + "/" + new Date(item.properties.start).getUTCFullYear(),
+									creneau: new Date(item.properties.start).getUTCHours() + "h" + minutesDebutStandard + " - " + new Date(item.properties.end).getUTCHours() + "h" + new Date(item.properties.end).getUTCMinutes(),
+						            salle: nomSalle,
+						            title: "RESERVED BY STUDENT" ,
+						            description: item.properties.desc,
+						            mail: item.properties.mail,
+						            nbPersonne: item.properties.nbPersonne
 								});
 								
 								_this.scope.events.push({
@@ -176,17 +209,19 @@ const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig) {
 		_this.http(
 				{
 					method: 'GET',
-					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/get/'+ _this.scope.userId +'/' + recherche.roomSelected.name.split(".", 1),
+					url: 'https://1-dot-freeclassroomsuniversity.appspot.com/_ah/api/monapi/v1/creneaux/get/'+ _this.scope.userId +'/' + recherche.roomSelected.name.split(".", 1)[0],
 					headers : {'Accept' : 'application/json'}
 				}
 				).then(function successCallback(response) {
 					if (response.data) {
 						angular.forEach(response.data.items, function(item) {
 							if(new Date(item.properties.start).getUTCHours() !== 8 && new Date(item.properties.end).getUTCHours() !== 19) {
+								const minutesDebutStandard = new Date(item.properties.start).getUTCMinutes() === 0 ? "" : new Date(item.properties.start).getUTCMinutes();
+								const nomSalle = _this.scope.listeRoomUniversity.filter(room => room.name.split(".", 1)[0] === item.properties.salle);
 								_this.scope.listeEventsDatastore.push({
-									date: new Date(item.properties.start).getDay() + "/" + new Date(item.properties.start).getMonth() + "/" + new Date(item.properties.start).getYear(),
-									creneau: new Date(item.properties.start).getHours() + "h" + new Date(item.properties.start).getMinutes() + " - " + new Date(item.properties.end).getHours() + "h" + new Date(item.properties.end).getMinutes(),
-						            salle: item.properties.salle,
+									date: new Date(item.properties.start).getUTCDate() + "/" + (new Date(item.properties.start).getUTCMonth() + 1) + "/" + new Date(item.properties.start).getUTCFullYear(),
+									creneau: new Date(item.properties.start).getUTCHours() + "h" + minutesDebutStandard + " - " + new Date(item.properties.end).getUTCHours() + "h" + new Date(item.properties.end).getUTCMinutes(),
+						            salle: nomSalle,
 						            title: "COURS"
 								});
 								
@@ -281,15 +316,25 @@ const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig) {
 				salle: _this.scope.recherche.roomSelected.name, 
 				mail: listeEmails, 
 				nbPersonne: reservation.capaciteSalle, 
-				desc: reservation.desc
+				desc: reservation.titre + "\n" + reservation.desc
     		};
     		_this.scope.addResa(reservationStandard);
 			_this.scope.events.push({
 	            start: dateHeureStart,
 	            end: dateHeureEnd,
-	            title: reservation.title,
-	            className: ['creneauReserve']
+	            title: "RESERVED BY YOU",
+	            className: ['creneauOccupeReserve']
 	        });
+			const minutesDebutStandard = dateHeureStart.getUTCMinutes() === 0 ? "" : dateHeureStart.getUTCMinutes();
+			_this.scope.listeEventsDatastore.push({
+				date: dateHeureStart.getUTCDate() + "/" + (dateHeureStart.getUTCMonth() + 1) + "/" + dateHeureStart.getUTCFullYear(),
+				creneau: dateHeureStart.getUTCHours() + "h" + minutesDebutStandard + " - " + dateHeureEnd.getUTCHours() + "h" + dateHeureEnd.getUTCMinutes(),
+	            salle: _this.scope.recherche.roomSelected.libelle,
+	            title: "RESERVED BY YOU",
+	            nbPersonne: reservation.capaciteSalle, 
+	            mail: listeEmails,
+	            description: reservation.title + "\n" + reservation.desc
+			});
 			_this.scope.eventSources = [_this.scope.events];
     	}
     }
@@ -353,7 +398,7 @@ const ClassRoomCtrl = function($scope, $rootScope, $http, uiCalendarConfig) {
 	// filtrage sur les créneaux disponibles à cette date
 	this.scope.$watch("reservation.dateSelected", function() {
 		if (_this.scope.reservation && _this.scope.reservation.dateSelected) {
-			const tmpListeCreneauxOccupes = _this.scope.events.filter(creneau => new Date(creneau.start).getDay() === _this.scope.reservation.dateSelected.getDay() && new Date(creneau.start).getMonth() === _this.scope.reservation.dateSelected.getMonth() && new Date(creneau.start).getYear() === _this.scope.reservation.dateSelected.getYear());
+			const tmpListeCreneauxOccupes = _this.scope.events.filter(creneau => new Date(creneau.start).getDate() === _this.scope.reservation.dateSelected.getDate() && new Date(creneau.start).getMonth() === _this.scope.reservation.dateSelected.getMonth() && new Date(creneau.start).getYear() === _this.scope.reservation.dateSelected.getYear());
 			_this.scope.listeCreneauxLibres = _this.scope.listeCreneauxUniversity;
 			
 			angular.forEach(tmpListeCreneauxOccupes, function(creneauOccupe) {
