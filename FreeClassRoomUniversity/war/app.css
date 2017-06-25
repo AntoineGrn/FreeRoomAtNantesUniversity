@@ -56,6 +56,14 @@
 	font-size: 14px;
 }
 
+#pageTop .copyrightStyle {
+	font-size: 12px;
+}
+
+#pageTop .labelMesResaStyle {
+	font-weight : bold;
+}
+
 #DetailCreneauModale .evenementValueTitle{
 	font-weight: bold;
 	color: #515151;
@@ -65,4 +73,15 @@
 		width: 800px;
 		text-align: center;
 	}
+#footer a {
+	color: #337ab7;
+}
 
+#pageTop .clicEvenementStyle {
+	font-style: italic;
+	font-size : 11px;
+}
+
+#footer a:hover {
+	color: #ffffff;
+}
